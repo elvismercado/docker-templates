@@ -1,6 +1,0 @@
-networks:
-  handbrake:
-    name: handbrake
-    ipam:
-      config:
-        - subnet: 10.55.55.0/24
