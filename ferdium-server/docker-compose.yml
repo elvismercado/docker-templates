@@ -1,0 +1,75 @@
+# Ferdium server
+# https://github.com/ferdium/ferdium-server/blob/main/docker/docker-compose.yml
+
+# This setup is for running in my Unraid server
+
+# !!!Create new account through the Client!!!
+
+# TODO: change to https://www.linuxserver.io/?
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+x-smtp: &smtp
+  MAIL_CONNECTION: smtp
+  SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+  SMTP_PORT: ${SMTP_PORT:-587}
+  MAIL_SSL: true
+  MAIL_USERNAME: ${SMTP_USERNAME}
+  MAIL_PASSWORD: ${SMTP_PASSWORD}
+  MAIL_SENDER: ${SMTP_FROM}
+
+x-db: &db
+  DB_CONNECTION: sqlite
+  DB_HOST: 127.0.0.1
+  DB_PORT: 3306
+  DB_USER: root
+  DB_PASSWORD: password
+  DB_DATABASE: ferdium
+  DB_SSL: false
+
+name: ${CONTAINER_NAME:-ferdium-server}
+
+networks:
+  mynetwork:
+    name: ${CONTAINER_NAME:-ferdium-server}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  ferdium-server:
+    image: ferdium/ferdium-server:latest
+    container_name: ${CONTAINER_NAME:-ferdium-server}
+    hostname: ${CONTAINER_NAME:-ferdium-server}
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: ${IP_ADDRESS:-10.42.0.10}
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-ferdium-server}/data:/data
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-ferdium-server}/recipes:/app/build/recipes
+    ports:
+      - ${HTTP_PORT:-3333}:3333
+    environment:
+      <<: [*base-env, *smtp]
+      # <<: [*base-env, *smtp, *db] # not including DB and leaving container to handle defaults
+      NODE_ENV: production
+      APP_URL: ${APP_URL:-http://127.0.0.1}
+      IS_CREATION_ENABLED: true
+      IS_DASHBOARD_ENABLED: true
+      IS_REGISTRATION_ENABLED: true
+      CONNECT_WITH_FRANZ: false
+      DATA_DIR: /data
+      JWT_USE_PEM: true
+    labels:
+      - "com.service=${CONTAINER_NAME:-ferdium-server}"
+
+# !!!If needed, create folders before running!!!
+# `mkdir -p /mnt/user/appdata/ferdium-server/data /mnt/user/appdata/ferdium-server/recipes`
+# `chown -R 99:100 /mnt/user/appdata/ferdium-server && chmod -R 775 /mnt/user/appdata/ferdium-server`

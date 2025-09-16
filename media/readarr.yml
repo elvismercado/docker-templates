@@ -1,0 +1,46 @@
+# https://hub.docker.com/r/linuxserver/readarr
+
+version: "3.9"
+
+x-base-env: &base-env # Unraid
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+services:
+  # Books
+  readarr-books:
+    image: lscr.io/linuxserver/readarr:${READARR_VERSION:-develop}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-readarr-books
+    restart: always
+    networks:
+      - media-net
+    volumes:
+      - ${APPDATA_BASE_PATH}/readarr-books:/config
+      - ${MEDIA_PATH}:/media
+    ports:
+      - ${READARR_BOOKS_HTTP_PORT:-8787}:8787 # WebUI
+    environment:
+      <<: *base-env
+    depends_on:
+      - prowlarr
+
+  # Audiobooks
+  # Synced from readarr-books
+  readarr-audiobooks:
+    image: lscr.io/linuxserver/readarr:${READARR_VERSION:-develop}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-readarr-audiobooks
+    restart: always
+    networks:
+      - media-net
+    volumes:
+      - ${APPDATA_BASE_PATH}/readarr-audiobooks:/config
+      - ${MEDIA_PATH}:/media
+    ports:
+      - ${READARR_AUDIOBOOKS_HTTP_PORT:-8788}:8787 # WebUI
+    environment:
+      <<: *base-env
+    depends_on:
+      - prowlarr
+      - readarr-books

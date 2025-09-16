@@ -1,0 +1,44 @@
+# https://github.com/jgraph/docker-drawio/blob/dev/docker-compose.yml
+# draw.io
+
+# This setup is for running in my Unraid server
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-drawio}
+
+networks:
+  mynetwork:
+    name: ${CONTAINER_NAME:-drawio}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  drawio:
+    image: jgraph/drawio
+    container_name: ${CONTAINER_NAME:-drawio}
+    hostname: ${CONTAINER_NAME:-drawio}
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: ${IP_ADDRESS:-10.42.0.10}
+    ports:
+      # - ${HTTP_PORT:-8080}:8080
+      - ${HTTPS_PORT:-8443}:8443
+    environment:
+      <<: *base-env
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    labels:
+      - "com.service=${CONTAINER_NAME:-drawio}"

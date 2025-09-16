@@ -1,0 +1,46 @@
+# Duplicati
+# https://hub.docker.com/r/linuxserver/duplicati
+
+# This is a template
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-duplicati}
+
+networks:
+  mynetwork:
+    name: ${CONTAINER_NAME:-duplicati}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    container_name: ${CONTAINER_NAME:-duplicati}
+    hostname: ${CONTAINER_NAME:-duplicati}
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: ${IP_ADDRESS:-10.42.0.10}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # I add this only because i run in a trusted env and i want to start/stop containers while running backups
+      - /usr/bin/docker:/usr/bin/docker:ro
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-duplicati}/config:/config
+      - ${BACKUPS_PATH}:/backups # Path to store local backups. preferably use a seperate storage location (share/volume/drive)
+      - ${SOURCE_PATH}:/source # Path to source for files to backup.
+    ports:
+      - ${HTTP_PORT:-8200}:8200
+    environment:
+      <<: *base-env
+      SETTINGS_ENCRYPTION_KEY: ${SETTINGS_ENCRYPTION_KEY}
+      DUPLICATI__WEBSERVICE_PASSWORD: ${DUPLICATI__WEBSERVICE_PASSWORD}
+    labels:
+      - "com.service=${CONTAINER_NAME:-duplicati}"
+      - "com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-false}"

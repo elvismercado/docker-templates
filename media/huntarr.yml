@@ -1,0 +1,24 @@
+# https://plexguide.github.io/Huntarr.io/getting-started/installation.html
+
+version: "3.9"
+
+x-base-env: &base-env # Unraid
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+services:
+  huntarr:
+    image: huntarr/huntarr:${HUNTARR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-huntarr
+    restart: always
+    networks:
+      - media-net
+    volumes:
+      - ${APPDATA_BASE_PATH}/huntarr:/config
+      - ${MEDIA_PATH}:/media
+    ports:
+      - ${HUNTARR_HTTP_PORT:-9705}:9705
+    environment:
+      <<: *base-env

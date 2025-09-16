@@ -1,0 +1,52 @@
+# PKI paths
+pki:
+  # ca: /etc/nebula/ca.crt
+  # cert: /etc/nebula/host.crt
+  # key: /etc/nebula/host.key
+  ca: /config/ca.crt
+  cert: /config/LighthouseYUNA.crt
+  key: /config/LighthouseYUNA.key
+
+# Port settings
+listen:
+  #Default for this key is 0.0.0.0 which is v4-only and stupid
+  # host: "[::]"
+  host: "0.0.0.0"
+  port: 4242
+
+# No static hosts for lighthouses
+# static_host_map:
+#   "192.168.200.1": ["mydomain.com:443"]
+
+#Lighthouse settings
+lighthouse:
+  am_lighthouse: true
+  # Enable serving DNS to anyone (Even our external IP)
+  serve_dns: true
+  dns:
+    #Default for this key is 0.0.0.0 which is v4-only and stupid
+    # host: "[::]"
+    host: "0.0.0.0"
+    port: 53
+
+#I can also be a relay
+relay:
+  am_relay: true
+
+#Firewall settings
+firewall:
+  outbound:
+    # Allow all outbound traffic from this node
+    - port: any
+      proto: any
+      host: any
+
+  inbound:
+    # Allow icmp between any nebula hosts
+    - port: any
+      proto: icmp
+      host: any
+    # Allow DNS incoming since we are serving DNS at this lighthouse
+    - port: 53
+      proto: udp
+      group: any

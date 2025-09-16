@@ -1,0 +1,48 @@
+# https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/
+
+# This setup is for running in my Unraid server
+
+version: "3.9"
+
+x-base-env: &base-env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+include:
+  - ../draw-io/networks.yml
+  - ../heimdall/networks.yml
+  - ../media/networks.yml
+  - ../librespeed/networks.yml
+  - ../nextcloud-all-in-one/networks.yml
+  - ../rustdesk/networks.yml
+  - ../searxng/networks.yml
+  - ../vaultwarden/networks.yml
+  - ../adguardhome/networks.yml
+  - ../microbin/networks.yml
+  - ../plant-it/networks.yml
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: ${CONTAINER_NAME:-cloudflared}
+    networks:
+      - draw-io
+      - heimdall
+      - librespeed
+      - nextcloud-aio
+      - rustdesk
+      - searxng
+      - vaultwarden
+      - adguardhome
+      - microbin
+      - plant-it
+      - pterodactyl
+    restart: always
+    environment:
+      <<: *base-env
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+    command: tunnel --no-autoupdate run
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true" # Enables Wathctower

@@ -1,0 +1,47 @@
+# Dashy
+# https://dashy.to/
+
+# This is a template
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-dashy}
+
+networks:
+  mynetwork:
+    name: ${CONTAINER_NAME:-dashy}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  dashy:
+    image: lissy93/dashy
+    container_name: ${CONTAINER_NAME:-dashy}
+    hostname: ${CONTAINER_NAME:-dashy}
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: ${IP_ADDRESS:-10.42.0.10}
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-dashy}/conf.yml:/app/user-data/conf.yml
+    ports:
+      - ${HTTP_PORT:-8080}:8080
+    environment:
+      <<: *base-env
+      NODE_ENV: production
+    healthcheck:
+      test: ["CMD", "node", "/app/services/healthcheck"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.service=${CONTAINER_NAME:-dashy}"
+      - "com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-false}"

@@ -1,0 +1,112 @@
+# Found here: https://github.com/recyclarr/config-templates/blob/master/radarr/templates/hd-bluray-web.yml
+
+###################################################################################################
+# Recyclarr Configuration Template: HD Bluray + WEB                                               #
+# Updated: 2025-05-04                                                                             #
+# Documentation: https://recyclarr.dev                                                            #
+# Note: If you are using multiple profiles in a single instance, please read the following        #
+# documentation about file merging:                                                               #
+# https://recyclarr.dev/wiki/yaml/config-examples/#merge-single-instance                          #
+###################################################################################################
+
+# Instance Definition: https://recyclarr.dev/wiki/yaml/config-reference/basic/
+radarr:
+  media_radarr_movies_hd:
+    delete_old_custom_formats: true
+    replace_existing_custom_formats: true
+
+    media_naming:
+      folder: jellyfin
+      movie:
+        rename: true
+        standard: jellyfin
+
+    include:
+      # Comment out any of the following includes to disable them
+      - template: radarr-quality-definition-movie
+      - template: radarr-quality-profile-hd-bluray-web
+      - template: radarr-custom-formats-hd-bluray-web
+
+    custom_formats:
+      # Movie Versions
+      - trash_ids:
+        # Uncomment any of the following lines to prefer these movie versions
+        # - 570bc9ebecd92723d2d21500f4be314c # Remaster
+        # - eca37840c13c6ef2dd0262b141a5482f # 4K Remaster
+        # - e0c07d59beb37348e975a930d5e50319 # Criterion Collection
+        # - 9d27d9d2181838f76dee150882bdc58c # Masters of Cinema
+        # - db9b4c4b53d312a3ca5f1378f6440fc9 # Vinegar Syndrome
+        # - 957d0f44b592285f26449575e8b1167e # Special Edition
+        # - eecf3a857724171f968a66cb5719e152 # IMAX
+        # - 9f6cbff8cfe4ebbc1bde14c7b7bec0de # IMAX Enhanced
+        assign_scores_to:
+          - name: HD Bluray + WEB
+            # score: 0 # Uncomment this line to disable prioritizing above movie versions
+
+      # Optional
+      - trash_ids:
+          - b6832f586342ef70d9c128d40c07b872 # Bad Dual Groups
+          - cc444569854e9de0b084ab2b8b1532b2 # Black and White Editions
+          - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
+          - 7357cf5161efbf8c4d5d0c30b4815ee2 # Obfuscated
+          - 5c44f52a8714fdd79bb4d98e2673be1f # Retags
+          - f537cf427b64c38c8e36298f657e4828 # Scene
+        assign_scores_to:
+          - name: HD Bluray + WEB
+
+      - trash_ids:
+          # Uncomment the next six lines to allow x265 HD releases with HDR/DV
+          - dc98083864ea246d05a42df0d05f81cc # x265 (HD)
+        assign_scores_to:
+          - name: HD Bluray + WEB
+            score: 0
+      - trash_ids:
+          - 839bea857ed2c0a8e084f3cbdbd65ecb # x265 (no HDR/DV)
+        assign_scores_to:
+          - name: HD Bluray + WEB
+
+      ##### My Customs #####
+
+      # Miscellaneous
+      - trash_ids:
+          - 820b09bb9acbfde9c35c71e0e565dad8 # 1080p
+          - 73613461ac2cea99d52c4cd6e177ab82 # HFR
+          - e7718d7a3ce595f289bfee26adc178f5 # Repack/Proper
+          - ae43b294509409a6a13919dedd4764c4 # Repack2
+          - 5caaaa1c08c1742aa4342d8c4cc463f2 # Repack3
+          - 2899d84dc9372de3408e6d8cc18e9666 # x264
+          - 9170d55c319f4fe40da8711ba9d8050d # x265
+          - 0d91270a7255a1e388fa85e959f359d8 # FreeLeech
+        assign_scores_to:
+          - name: HD Bluray + WEB
+
+      - trash_ids:
+          - 4b900e171accbfb172729b63323ea8ca # Multi
+        assign_scores_to:
+          - name: HD Bluray + WEB
+            score: 200
+
+      - trash_ids: # Custom 2000
+          - lat-team
+        assign_scores_to:
+          - name: HD Bluray + WEB
+            score: 2000
+
+      - trash_ids: # Custom 101
+          - language-prefer-english
+          - language-prefer-original
+          - language-prefer-spanish
+          - language-prefer-english-and-latino
+          - language-prefer-english-and-spanish
+          - language-prefer-english-in-title
+          - language-prefer-original-and-english-and-latino
+          - language-prefer-original-and-english-and-spanish
+          - language-prefer-spanish-in-title
+        assign_scores_to:
+          - name: HD Bluray + WEB
+            score: 101
+      - trash_ids: # Custom -50000
+          - language-not-original-or-english-or-spanish
+        assign_scores_to:
+          - name: HD Bluray + WEB
+            score: -50000

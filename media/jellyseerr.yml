@@ -1,0 +1,26 @@
+# https://docs.jellyseerr.dev/getting-started/docker?docker-methods=docker-compose
+
+version: "3.9"
+
+x-base-env: &base-env # Unraid
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+services:
+  jellyseerr:
+    image: fallenbagel/jellyseerr:${JELLYSEERR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-jellyseerr
+    restart: always
+    networks:
+      - media-net
+    volumes:
+      - ${APPDATA_BASE_PATH}/jellyseerr:/app/config
+    ports:
+      - ${JELLYSEERR_HTTP_PORT:-5055}:5055
+    environment:
+      <<: *base-env
+      PORT: 5055
+      DB_TYPE: sqlite
+      # LOG_LEVEL: debug

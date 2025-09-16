@@ -1,0 +1,37 @@
+# https://github.com/CorentinTh/it-tools
+# IT Tools
+
+# This setup is for running in my Unraid server
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-it-tools}
+
+networks:
+  mynetwork:
+    name: ${CONTAINER_NAME:-it-tools}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  it-tools:
+    image: corentinth/it-tools:latest
+    container_name: ${CONTAINER_NAME:-it-tools}
+    hostname: ${CONTAINER_NAME:-it-tools}
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: ${IP_ADDRESS:-10.42.0.10}
+    ports:
+      - ${HTTP_PORT:-8080}:80
+    environment:
+      <<: *base-env
+    labels:
+      - "com.service=${CONTAINER_NAME:-it-tools}"

@@ -1,0 +1,42 @@
+# https://hub.docker.com/r/linuxserver/bazarr
+
+version: "3.9"
+
+x-base-env: &base-env # Unraid
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+services:
+  # Movies HD & Series HD
+  bazarr-hd:
+    image: lscr.io/linuxserver/bazarr:${BAZARR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-bazarr-hd
+    restart: always
+    networks:
+      - media-net
+    volumes:
+      - ${APPDATA_BASE_PATH}/bazarr-anime:/config
+      - ${MEDIA_PATH}/movies-hd:/movies
+      - ${MEDIA_PATH}/series-hd:/tv
+    ports:
+      - ${BAZARR_HTTP_PORT:-6767}:6767 # WebUI
+    environment:
+      <<: *base-env
+
+  # Anime Movies/Series Subtitles
+  bazarr-anime:
+    image: lscr.io/linuxserver/bazarr:${BAZARR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-bazarr-anime
+    restart: always
+    networks:
+      - media-net
+    volumes:
+      - ${APPDATA_BASE_PATH}/bazarr-anime:/config
+      - ${MEDIA_PATH}/movies-anime-hd:/movies
+      - ${MEDIA_PATH}/series-anime-hd:/tv
+    ports:
+      - ${BAZARR_ANIME_HTTP_PORT:-6768}:6767 # WebUI
+    environment:
+      <<: *base-env

@@ -1,0 +1,29 @@
+# https://hub.docker.com/r/linuxserver/prowlarr
+
+version: "3.9"
+
+x-base-env: &base-env # Unraid
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:${PROWLARR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-prowlarr
+    restart: always
+    # network_mode: "service:gluetun"
+    networks:
+      - media-net
+    volumes:
+      - ${APPDATA_BASE_PATH}/prowlarr:/config
+    # Ports are commented out because of passing through `gluetun`
+    ports:
+      - ${PROWLARR_HTTP_PORT:-9696}:9696
+    environment:
+      <<: *base-env
+    depends_on:
+      - flaresolverr
+      - transmission
+      - gluetun

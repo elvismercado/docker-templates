@@ -1,0 +1,6 @@
+networks:
+  librespeed:
+    name: librespeed
+    ipam:
+      config:
+        - subnet: 10.5.3.0/24

@@ -1,0 +1,44 @@
+# Handbrake
+# https://github.com/jlesage/docker-handbrake
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-handbrake}
+
+networks:
+  default:
+    name: ${CONTAINER_NAME:-handbrake}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  handbrake: # Only for public DoT or DoH or DoQ
+    image: jlesage/handbrake
+    container_name: ${CONTAINER_NAME:-handbrake}
+    hostname: ${CONTAINER_NAME:-handbrake}
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-handbrake}:/config:rw
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-handbrake}/watch:/watch:rw
+      - ${STORAGE_PATH}:/storage:ro
+      - ${STORAGE_PATH}/handbrake_output:/output:rw
+    ports:
+      - ${HTTP_PORT:-5800}:5800
+    environment:
+      <<: *base-env
+      USER_ID: ${UID}
+      GROUP_ID: ${GID}
+      KEEP_APP_RUNNING: 1
+      WEB_AUDIO: 1
+      HANDBRAKE_GUI: 1
+    labels:
+      - "com.service=${CONTAINER_NAME:-handbrake}"
