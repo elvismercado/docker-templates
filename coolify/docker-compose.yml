@@ -27,7 +27,7 @@ services:
     networks:
       - default
     extra_hosts:
-      - host.docker.internal:host-gateway
+      - host.docker.internal:${HOST_GATEWAY:-host-gateway}
     volumes:
       - type: bind
         source:  ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-coolify}/data/coolify/source/.env
@@ -46,7 +46,6 @@ services:
       - "${HTTP_PORT:-8000}"
     environment:
       <<: *base-env
-      APP_URL: ${APP_URL}
       APP_ENV: ${APP_ENV:-production}
       PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT:-256M}
       PHP_FPM_PM_CONTROL: ${PHP_FPM_PM_CONTROL:-dynamic}
@@ -122,7 +121,7 @@ services:
     networks:
       - default
     extra_hosts:
-      - host.docker.internal:host-gateway
+      - host.docker.internal:${HOST_GATEWAY:-host-gateway}
     volumes:
       - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-coolify}/data/coolify/ssh:/var/www/html/storage/app/ssh
     environment:
