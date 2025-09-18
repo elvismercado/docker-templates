@@ -27,7 +27,7 @@ x-base-env: &base-env
 name: ${CONTAINER_NAME:-linuxgsm-vhserver}
 
 networks:
-  mynetwork:
+  default:
     name: linuxgsm
     ipam:
       config:
@@ -40,7 +40,7 @@ services:
     hostname: ${CONTAINER_NAME:-linuxgsm-vhserver}
     restart: always
     networks:
-      - mynetwork
+      - default
     ports:
       - "${GAME_PORT:-2456}:2456/udp" # Game Port
       - "${QUERY_PORT:-2457}:2457/udp" # Query Port
