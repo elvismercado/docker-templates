@@ -44,6 +44,7 @@ services:
     ports:
       - "${GAME_PORT:-2456}:2456/udp" # Game Port
       - "${QUERY_PORT:-2457}:2457/udp" # Query Port
+      - "2458:2458/udp" # Game Port + 2
     volumes:
       - ${VOLUMES_BASE:-/tmp}/linuxgsm/${CONTAINER_NAME:-linuxgsm-vhserver}:/data
     environment:
