@@ -6,12 +6,15 @@
 # https://github.com/GameServerManagers/docker-gameserver/blob/main/docker-compose/docker-compose-vh.yml
 
 # TODO: setup https://www.gameserverapp.com/?camp=linuxgsm&grp=vhserver
+# TODO: MODS: https://www.reddit.com/r/valheim/comments/yogpxh/anyone_run_mods_on_a_dockerized_valheim_server/
 
 # LinuxGSM user: linuxgsm
 # ./vhserver details
 # ./vhserver update-lgsm
 # LinuxGSM config load order _default.cfg -> common.cfg -> [instance].cfg
 # edit configs inside the mounted volume if there are no env variables available
+
+# -crossplay startupparameter not working for me
 
 # Steam
 # Add to launch options: `-console`
@@ -44,7 +47,7 @@ services:
     ports:
       - "${GAME_PORT:-2456}:2456/udp" # Game Port
       - "${QUERY_PORT:-2457}:2457/udp" # Query Port
-      - "2458:2458/udp" # Game Port + 2
+      - "${RPC_PORT:-2458}:2458/udp" # (Game Port + 2), RPC
     volumes:
       - ${VOLUMES_BASE:-/tmp}/linuxgsm/${CONTAINER_NAME:-linuxgsm-vhserver}:/data
     environment:
