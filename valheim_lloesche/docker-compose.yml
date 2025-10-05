@@ -35,7 +35,7 @@ services:
       - "${GAME_PORT:-2456}:${GAME_PORT:-2456}/udp" # Game Port
       - "${QUERY_PORT:-2457}:${QUERY_PORT:-2457}/udp" # Query Port
       - "${RPC_PORT:-2458}:${RPC_PORT:-2458}/udp" # (Game Port + 2), RPC
-      - "${SUPERVISOR_PORT:-2455}:${SUPERVISOR_PORT:-2455}/tcp" # SUPERVISOR_PORT
+      - "${SUPERVISOR_PORT:-2455}:9001/tcp" # SUPERVISOR_PORT
     volumes:
       - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim-server/config:/config
       - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim-server/data:/opt/valheim
