@@ -36,11 +36,12 @@ services:
       - "${QUERY_PORT:-2457}:${QUERY_PORT:-2457}/udp" # Query Port
       - "${RPC_PORT:-2458}:${RPC_PORT:-2458}/udp" # (Game Port + 2), RPC
       - "${SUPERVISOR_PORT:-2455}:9001/tcp" # SUPERVISOR_PORT
+      - "${STATUS_PORT:-2454}:80/tcp" # STATUS_PORT
     volumes:
       - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim-server/config:/config
       - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim-server/data:/opt/valheim
-    environment:
-      <<: *base-env
+    # environment:
+    #   <<: *base-env
     labels:
       - "com.service=${CONTAINER_NAME:-valheim_lloesche}"
       - "com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-false}"
