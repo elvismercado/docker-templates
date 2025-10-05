@@ -1,20 +1,26 @@
 
-# valheim_plus.cfg
-# Server
-VPCFG_Server_enabled=true
-VPCFG_Server_maxPlayers=31
-VPCFG_Server_disableServerPassword=false
-VPCFG_Server_enforceMod=true
-VPCFG_Server_serverSyncsConfig=true
-VPCFG_Server_serverSyncHotkeys=false
+WORLD_NAME={{ _servername_ }}
 
-# Stamina
-VPCFG_Stamina_enabled=true
-VPCFG_Stamina_dodgeStaminaUsage=-100
-VPCFG_Stamina_encumberedStaminaDrain=0
-VPCFG_Stamina_jumpStaminaDrain=0
-VPCFG_Stamina_runStaminaDrain=0
-VPCFG_Stamina_sneakStaminaDrain=0
-VPCFG_Stamina_staminaRegen=0
-VPCFG_Stamina_staminaRegenDelay=0
-VPCFG_Stamina_swimStaminaDrain=0
+SERVER_NAME={{ _servername_ }}
+SERVER_PORT={{ _game_port_ }}
+SERVER_PASS={{ _serverpassword_ }}
+SERVER_PUBLIC=true
+
+BACKUPS_MAX_AGE=30
+
+ADMINLIST_IDS={{ _admins_ }}
+
+CROSSPLAY=false
+
+SUPERVISOR_HTTP=true
+SUPERVISOR_HTTP_USER=
+SUPERVISOR_HTTP_PASS=
+
+VALHEIM_PLUS=true
+VALHEIM_PLUS_REPO=Grantapher/ValheimPlus
+BEPINEX=false
+
+PUID={{ _uid_ }}
+PGID={{ _gid_ }}
+
+STATUS_HTTP=true

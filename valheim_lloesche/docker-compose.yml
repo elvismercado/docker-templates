@@ -1,6 +1,11 @@
 # https://github.com/lloesche/valheim-server-docker
 # Valheim Server in a Docker Container (with BepInEx and ValheimPlus support)
 
+# Client
+# Grab latest version and drop in steam game folder
+# [Right-Click] Valheim > Manage > Browse local files
+# https://github.com/Grantapher/ValheimPlus/releases/download/0.9.16.2/WindowsClient.zip
+
 x-base-env: &base-env
   PUID: ${UID}
   PGID: ${GID}
