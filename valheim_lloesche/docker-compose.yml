@@ -1,0 +1,46 @@
+# https://github.com/lloesche/valheim-server-docker
+# Valheim Server in a Docker Container (with BepInEx and ValheimPlus support)
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-valheim_lloesche}
+
+networks:
+  default:
+    name: valheim_lloesche
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  valheim_lloesche:
+    image: ghcr.io/lloesche/valheim-server
+    container_name: ${CONTAINER_NAME:-valheim_lloesche}
+    hostname: ${CONTAINER_NAME:-valheim_lloesche}
+    cap_add:
+      - sys_nice
+    devices:
+      - "${INTEL_GPU:-/dev/null}:/dev/dri" # Hardware Acceleration - Intel
+    stop_grace_period: 2m
+    restart: always
+    networks:
+      - default
+    ports:
+      - "${GAME_PORT:-2456}:${GAME_PORT:-2456}/udp" # Game Port
+      - "${QUERY_PORT:-2457}:${QUERY_PORT:-2457}/udp" # Query Port
+      - "${RPC_PORT:-2458}:${RPC_PORT:-2458}/udp" # (Game Port + 2), RPC
+      - "${SUPERVISOR_PORT:-2455}:${SUPERVISOR_PORT:-2455}/tcp" # SUPERVISOR_PORT
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim-server/config:/config
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim-server/data:/opt/valheim
+    environment:
+      <<: *base-env
+    labels:
+      - "com.service=${CONTAINER_NAME:-valheim_lloesche}"
+      - "com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-false}"
