@@ -40,8 +40,10 @@ services:
     volumes:
       - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim-server/config:/config
       - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim-server/data:/opt/valheim
-    # environment:
-    #   <<: *base-env
+    environment:
+      <<: *base-env
+    env_file:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim-server/valheim.env
     labels:
       - "com.service=${CONTAINER_NAME:-valheim_lloesche}"
       - "com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-false}"
