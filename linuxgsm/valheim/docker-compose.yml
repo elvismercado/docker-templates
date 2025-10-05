@@ -41,6 +41,8 @@ services:
     image: gameservermanagers/gameserver:vh
     container_name: ${CONTAINER_NAME:-linuxgsm-vhserver}
     hostname: ${CONTAINER_NAME:-linuxgsm-vhserver}
+    devices:
+      - "${INTEL_GPU:-/dev/null}:/dev/dri" # Hardware Acceleration - Intel
     restart: always
     networks:
       - default
