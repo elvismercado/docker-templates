@@ -5,7 +5,8 @@
 # Grab latest version and drop in steam game folder
 # [Right-Click] Valheim > Manage > Browse local files
 # https://github.com/Grantapher/ValheimPlus/releases/download/0.9.16.2/WindowsClient.zip
-
+# If you need to disable BepInEx, rename the folder and restart game
+# rename again to enable it
 x-base-env: &base-env
   PUID: ${UID}
   PGID: ${GID}
