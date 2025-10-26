@@ -1,0 +1,8 @@
+# WUD (What's Up Docker?) labels — notify + auto-update (minor/patch only)
+
+services:
+  portainer:
+    labels:
+      - "wud.watch=true"
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+      - "wud.trigger.include=smtp.gmail,docker.local:minor"

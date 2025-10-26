@@ -1,0 +1,23 @@
+# WUD (What's Up Docker?) labels
+# immich-server + ML: notify + auto-update (minor/patch only)
+# redis + database: notify only (digest-pinned images, manual update required)
+
+services:
+  immich-server:
+    labels:
+      - "wud.watch=true"
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+      - "wud.trigger.include=smtp.gmail,docker.local:minor"
+  immich-machine-learning:
+    labels:
+      - "wud.watch=true"
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+      - "wud.trigger.include=smtp.gmail,docker.local:minor"
+  redis:
+    labels:
+      - "wud.watch=true"
+      - "wud.trigger.include=smtp.gmail"
+  database:
+    labels:
+      - "wud.watch=true"
+      - "wud.trigger.include=smtp.gmail"

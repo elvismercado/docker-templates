@@ -1,0 +1,34 @@
+# Portainer
+# https://docs.portainer.io/start/install-ce/server/docker/linux
+
+# This is a template
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-portainer}
+
+networks:
+  default:
+    name: ${CONTAINER_NAME:-portainer}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  portainer:
+    image: portainer/portainer-ce:${IMAGE_VERSION:-lts}
+    container_name: ${CONTAINER_NAME:-portainer}
+    hostname: ${CONTAINER_NAME:-portainer}
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-portainer}:/data
+      - ${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock
+    ports:
+      - ${HTTPS_PORT:-9443}:9443/tcp # UI
+    environment:
+      <<: *base-env
+    labels:
+      - "com.service=${CONTAINER_NAME:-portainer}"

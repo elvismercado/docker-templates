@@ -1,0 +1,13 @@
+# WUD (What's Up Docker?) labels — notify + auto-update (minor/patch only)
+
+services:
+  vaultwarden:
+    labels:
+      - "wud.watch=true"
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+      - "wud.trigger.include=smtp.gmail,docker.local:minor"
+  backvault:
+    labels:
+      - "wud.watch=true"
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+      - "wud.trigger.include=smtp.gmail,docker.local:minor"

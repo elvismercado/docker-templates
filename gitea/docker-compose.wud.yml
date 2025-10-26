@@ -1,0 +1,22 @@
+# WUD (What's Up Docker?) labels
+# server + runner: notify + auto-update (minor/patch only)
+# db: notify only (pinned/critical image)
+
+services:
+  server:
+    labels:
+      - "wud.watch=true"
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+      - "wud.trigger.include=smtp.gmail,docker.local:minor"
+
+  db:
+    labels:
+      - "wud.watch=true"
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+      - "wud.trigger.include=smtp.gmail"
+
+  runner:
+    labels:
+      - "wud.watch=true"
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+      - "wud.trigger.include=smtp.gmail,docker.local:minor"

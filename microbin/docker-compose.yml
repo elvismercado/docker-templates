@@ -1,0 +1,53 @@
+# https://github.com/szabodanika/microbin
+# Pastebin
+
+# This setup is for running in my Unraid server
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-microbin}
+
+networks:
+  mynetwork:
+    name: ${CONTAINER_NAME:-microbin}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  microbin:
+    image: danielszabo99/microbin:latest
+    container_name: ${CONTAINER_NAME:-microbin}
+    hostname: ${CONTAINER_NAME:-microbin}
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: ${IP_ADDRESS:-10.42.0.10}
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-microbin}:/app/microbin_data
+    ports:
+      - ${HTTP_PORT:-8080}:8080
+    environment:
+      <<: *base-env
+      MICROBIN_EDITABLE: ${MICROBIN_EDITABLE:-false}
+      MICROBIN_FOOTER_TEXT: "This is a public and unencrypted pastebin! Share data responsibly! Only up to 95MB of data can be shared per pasta."
+      MICROBIN_HIDE_LOGO: ${MICROBIN_HIDE_LOGO:-true}
+      MICROBIN_TITLE: ${MICROBIN_TITLE:-MicroBin}
+      MICROBIN_THREADS: ${MICROBIN_THREADS:-1}
+      MICROBIN_QR: ${MICROBIN_QR:-true}
+      MICROBIN_DEFAULT_EXPIRY: ${MICROBIN_DEFAULT_EXPIRY:-1hour}
+      MICROBIN_ENCRYPTION_CLIENT_SIDE: ${MICROBIN_ENCRYPTION_CLIENT_SIDE:-true}
+      MICROBIN_ENCRYPTION_SERVER_SIDE: ${MICROBIN_ENCRYPTION_SERVER_SIDE:-true}
+      MICROBIN_MAX_FILE_SIZE_ENCRYPTED_MB: ${MICROBIN_MAX_FILE_SIZE_ENCRYPTED_MB:-95} # MB - Cloudflare has a 100MB stream limit - setting this to 95MB 
+      MICROBIN_MAX_FILE_SIZE_UNENCRYPTED_MB: ${MICROBIN_MAX_FILE_SIZE_UNENCRYPTED_MB:-95} # MB - Cloudflare has a 100MB stream limit - setting this to 95MB 
+      MICROBIN_DISABLE_UPDATE_CHECKING: ${MICROBIN_DISABLE_UPDATE_CHECKING:-true}
+      MICROBIN_DISABLE_TELEMETRY: ${MICROBIN_DISABLE_TELEMETRY:-true}
+      MICROBIN_LIST_SERVER: ${MICROBIN_LIST_SERVER:-false}
+    labels:
+      - "com.service=${CONTAINER_NAME:-microbin}"

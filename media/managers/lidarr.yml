@@ -1,0 +1,26 @@
+# https://hub.docker.com/r/linuxserver/lidarr
+
+version: "3.9"
+
+x-base-env: &base-env # Unraid
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+services:
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:${LIDARR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-lidarr
+    restart: always
+    networks:
+      - media-net
+    volumes:
+      - ${APPDATA_BASE_PATH}/lidarr:/config
+      - ${MEDIA_PATH}:/media
+    ports:
+      - ${LIDARR_HTTP_PORT:-8686}:8686
+    environment:
+      <<: *base-env
+    depends_on:
+      - prowlarr

@@ -1,0 +1,21 @@
+# Huntarr
+# https://plexguide.github.io/Huntarr.io/getting-started/installation.html
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+
+services:
+  huntarr:
+    image: huntarr/huntarr:${HUNTARR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-huntarr
+    hostname: ${CONTAINER_NAME_PREFIX:-media}-huntarr
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/huntarr:/config
+      - ${MEDIA_PATH}:/media
+    ports:
+      - ${HUNTARR_HTTP_PORT:-9705}:9705
+    environment:
+      <<: *base-env

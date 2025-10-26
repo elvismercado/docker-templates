@@ -1,0 +1,6 @@
+networks:
+  traefik:
+    name: traefik
+    ipam:
+      config:
+        - subnet: 10.5.5.0/24

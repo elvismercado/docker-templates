@@ -1,0 +1,53 @@
+# Radarr
+# https://hub.docker.com/r/linuxserver/radarr
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+
+services:
+  # HD Movies
+  radarr-movies-hd:
+    image: lscr.io/linuxserver/radarr:${RADARR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-radarr-movies-hd
+    hostname: ${CONTAINER_NAME_PREFIX:-media}-radarr-movies-hd
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/radarr-movies-hd:/config
+      - ${MEDIA_PATH}:/media
+    ports:
+      - ${RADARR_HTTP_PORT:-7878}:7878 # WebUI
+    environment:
+      <<: *base-env
+      DOCKER_MODS: linuxserver/mods:radarr-striptracks
+      STRIPTRACKS_ARGS: "--audio :org:eng:spa:nld:dut:jpn:chi:zho:und --subs :org:eng:spa:nld:dut --reorder"
+    depends_on:
+      - prowlarr
+    labels:
+      - "com.service=${CONTAINER_NAME_PREFIX:-media}-radarr-movies-hd"
+
+  # Anime Movies
+  radarr-movies-anime-hd:
+    image: lscr.io/linuxserver/radarr:${RADARR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-radarr-movies-anime-hd
+    hostname: ${CONTAINER_NAME_PREFIX:-media}-radarr-movies-anime-hd
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/radarr-movies-anime-hd:/config
+      - ${MEDIA_PATH}:/media
+    ports:
+      - ${RADARR_ANIME_HTTP_PORT:-7879}:7878 # WebUI
+    environment:
+      <<: *base-env
+      DOCKER_MODS: linuxserver/mods:radarr-striptracks
+      STRIPTRACKS_ARGS: "--audio :org:eng:spa:nld:dut:jpn:chi:zho:und --subs :org:eng:spa:nld:dut --reorder"
+    depends_on:
+      - prowlarr
+    labels:
+      - "com.service=${CONTAINER_NAME_PREFIX:-media}-radarr-movies-anime-hd"

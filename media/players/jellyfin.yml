@@ -1,0 +1,33 @@
+# Jellyfin
+# https://hub.docker.com/r/linuxserver/jellyfin
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:${JELLYFIN_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-jellyfin
+    hostname: ${CONTAINER_NAME_PREFIX:-media}-jellyfin
+    restart: always
+    networks:
+      - default
+    devices:
+      - "${INTEL_GPU:-/dev/null}:/dev/dri" # Hardware Acceleration - Intel
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/jellyfin:/config
+      - ${MEDIA_PATH}:/media
+    ports:
+      - ${JELLYFIN_HTTP_PORT:-8096}:8096
+      - ${JELLYFIN_HTTPS_PORT:-8920}:8920
+      - 7359:7359/udp # Allows clients to discover Jellyfin on the local network.
+      - 1900:1900/udp # Service discovery used by DNLA and clients
+    environment:
+      <<: *base-env
+      JELLYFIN_PublishedServerUrl: ${JELLYFIN_PublishedServerUrl:-} # Set the autodiscovery response domain or IP address.
+      DOCKER_MODS: linuxserver/mods:jellyfin-opencl-intel # Only Intel
+    labels:
+      - "com.service=${CONTAINER_NAME_PREFIX:-media}-jellyfin"

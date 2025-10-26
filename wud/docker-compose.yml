@@ -1,0 +1,65 @@
+# WUD (What's Up Docker?)
+# https://getwud.github.io/wud/
+# Replaces archived Watchtower - monitors and auto-updates Docker containers
+
+# This is a template
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+  UID: ${UID}
+  GID: ${GID}
+
+name: ${CONTAINER_NAME:-wud}
+
+networks:
+  default:
+    name: ${CONTAINER_NAME:-wud}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  wud:
+    image: getwud/wud:${IMAGE_VERSION:-latest}
+    container_name: ${CONTAINER_NAME:-wud}
+    hostname: ${CONTAINER_NAME:-wud}
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${DOCKER_SOCK:-/var/run/docker.sock}:/var/run/docker.sock:ro
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-wud}/store:/store
+    ports:
+      - ${HTTP_PORT:-3000}:3000
+    environment:
+      <<: *base-env
+
+      ## Watcher — opt-in only, containers need wud.watch=true label
+      WUD_WATCHER_LOCAL_WATCHBYDEFAULT: false
+      WUD_WATCHER_LOCAL_CRON: ${WUD_CRON:-0 */6 * * *}
+      WUD_WATCHER_LOCAL_WATCHEVENTS: true
+
+      ## Trigger — SMTP (Gmail) notifications in batch mode
+      WUD_TRIGGER_SMTP_GMAIL_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      WUD_TRIGGER_SMTP_GMAIL_PORT: ${SMTP_PORT:-465}
+      WUD_TRIGGER_SMTP_GMAIL_USER: ${SMTP_USERNAME}
+      WUD_TRIGGER_SMTP_GMAIL_PASS: ${SMTP_PASSWORD}
+      WUD_TRIGGER_SMTP_GMAIL_FROM: ${SMTP_FROM}
+      WUD_TRIGGER_SMTP_GMAIL_TO: ${SMTP_TO}
+      WUD_TRIGGER_SMTP_GMAIL_TLS_ENABLED: true
+
+      ## Trigger — Docker auto-update (uses Docker API, no compose file mounting needed)
+      ## Per-container opt-in via label: wud.trigger.docker.local.include=minor
+      WUD_TRIGGER_DOCKER_LOCAL_PRUNE: true
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:3000"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    labels:
+      ## Self-watch: notify + auto-update
+      - "wud.watch=true"
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+      - "wud.trigger.include=smtp.gmail,docker.local"
+      - "com.service=${CONTAINER_NAME:-wud}"

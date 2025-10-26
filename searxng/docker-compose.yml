@@ -1,0 +1,81 @@
+# https://github.com/searxng/searxng-docker/blob/master/docker-compose.yaml
+# SearXNG
+
+# This setup is for running in my Unraid server
+
+# Copy the files to your appdata folder before starting the container
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-searxng}
+
+networks:
+  mynetwork:
+    name: ${CONTAINER_NAME:-searxng}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  searxng:
+    image: docker.io/searxng/searxng:latest
+    container_name: ${CONTAINER_NAME:-searxng}
+    hostname: ${CONTAINER_NAME:-searxng}
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: ${IP_ADDRESS:-10.42.0.10}
+    ports:
+      - ${HTTP_PORT:-8080}:8080
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-searxng}:/etc/searxng:rw
+      - searxng-data:/var/cache/searxng:rw
+    environment:
+      <<: *base-env
+      SEARXNG_BASE_URL: https://${SEARXNG_HOSTNAME:-localhost}/ #overwrites settings.yml{server.base_url}
+      SEARXNG_PORT: 8080 #overwrites settings.yml{server.port}
+      UWSGI_WORKERS: ${SEARXNG_UWSGI_WORKERS:-4}
+      UWSGI_THREADS: ${SEARXNG_UWSGI_THREADS:-4}
+      SEARXNG_LIMITER: ${SEARXNG_LIMITER:-true}
+      SEARXNG_PUBLIC_INSTANCE: ${SEARXNG_PUBLIC_INSTANCE:-true}
+      SEARXNG_IMAGE_PROXY: ${SEARXNG_IMAGE_PROXY:-true}
+      SEARXNG_METHOD: ${SEARXNG_METHOD:-POST}
+      SEARXNG_STATIC_USE_HASH: ${SEARXNG_STATIC_USE_HASH:-true}
+    depends_on:
+      redis:
+        condition: service_started
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+    labels:
+      - "com.service=${CONTAINER_NAME:-searxng}"
+
+  redis:
+    image: docker.io/valkey/valkey:8-alpine
+    command: valkey-server --save 30 1 --loglevel warning
+    container_name: ${CONTAINER_NAME_REDIS:-searxng-redis}
+    hostname: ${CONTAINER_NAME_REDIS:-searxng-redis}
+    restart: always
+    networks:
+      - mynetwork
+    volumes:
+      - valkey-data2:/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+    labels:
+      - "com.service=${CONTAINER_NAME_REDIS:-searxng-redis}"
+
+volumes:
+  valkey-data2:
+  searxng-data:

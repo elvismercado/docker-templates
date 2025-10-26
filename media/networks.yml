@@ -1,0 +1,6 @@
+networks:
+  default:
+    name: ${CONTAINER_NAME:-media-net}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}

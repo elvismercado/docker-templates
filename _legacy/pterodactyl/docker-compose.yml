@@ -1,0 +1,137 @@
+# pterodactyl
+# https://wiki.s5gi.com/guides/linux/pterodactyl_and_wings_dockerized
+
+# This setup is for running in my Unraid server
+
+version: "3.9"
+
+x-base-env: &base-env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  UID: ${PUID}
+  GID: ${PGID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+x-common:
+  database:
+    &db-environment # You don't need to change these because it will not be exposed to the public.
+    MYSQL_PASSWORD: &db-password ${MYSQL_PASSWORD}
+    MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+  panel: &panel-environment
+    #This is the URL that your panel will be on after being reverse proxied.
+    # set this to "https://yoursubdomain.yourdomain.yourdomainstld"
+    APP_URL: ${APP_URL}
+    # A list of valid timezones can be found here:
+    # http://php.net/manual/en/timezones.php
+    APP_TIMEZONE: ${TZ}
+    APP_SERVICE_AUTHOR: ${APP_SERVICE_AUTHOR}
+
+  # Mail is an optional Setup, I have the basic setup if you want to use a gmail
+  # account. You will need an App Password as the MAIL_PASSWORD field, not your
+  # gmail password. Uncomment the following lines to enable mail.
+  #mail:
+  #&mail-environment
+  #MAIL_FROM: "youremail@gmail.com"
+  #MAIL_DRIVER: "smtp"
+  #MAIL_HOST: "smtp.gmail.com"
+  #MAIL_PORT: "587"
+  #MAIL_USERNAME: "youremail@gmail.com"
+  #MAIL_PASSWORD: ""
+  #MAIL_ENCRYPTION: "true"
+
+networks:
+  pterodactyl:
+    name: pterodactyl
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.33.35.0/24
+    driver_opts:
+      com.docker.network.bridge.name: pterodactyl
+
+services:
+  # Wings is the service that hooks into docker and actually creates your game
+  # servers,
+  pterodactyl-wings:
+    image: ghcr.io/pterodactyl/wings:latest
+    container_name: pterodactyl-wings
+    restart: always
+    networks:
+      - pterodactyl
+    # These are the ports exposed by Wings, I don't recommend changing them.
+    ports:
+      # - "8443:443"
+      - "2022:2022"
+    tty: true
+    environment:
+      <<: *base-env
+      # For ease of setup, this is going to use root user.
+      WINGS_UID: 0
+      WINGS_GID: 0
+      WINGS_USERNAME: root
+      # WINGS_UID: ${PUID}
+      # WINGS_GID: ${PGID}
+      # WINGS_USERNAME: nobody
+    # This is where docker will bind certain parts of container to your actual
+    # host OS. These locations will be used later.
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock" # DO NOT CHANGE
+      - "/var/lib/docker/containers:/var/lib/docker/containers" # DO NOT CHANGE
+      - "${APPDATA_BASE_PATH}/pterodactyl/wings/config:/etc/pterodactyl" # Feel free to change.
+      - "${APPDATA_BASE_PATH}/pterodactyl/wings/lib:/var/lib/pterodactyl" # DO NOT CHANGE
+      - "${APPDATA_BASE_PATH}/pterodactyl/wings/log:/var/log/pterodactyl" # DO NOT CHANGE
+      - "/tmp/pterodactyl/:/tmp/pterodactyl/" # Recommended not to change.
+
+  # It's a database. Not much else to explain.
+  pterodactyl-database:
+    image: mariadb:10.5
+    container_name: pterodactyl-database
+    restart: always
+    networks:
+      - pterodactyl
+    # command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ${APPDATA_BASE_PATH}/pterodactyl/panel/database:/var/lib/mysql"
+    environment:
+      <<: [*base-env, *db-environment]
+      MYSQL_DATABASE: "panel"
+      MYSQL_USER: "pterodactyl"
+
+  # It's a CACHE database. Not much else to explain.
+  pterodactyl-cache:
+    image: redis:alpine
+    container_name: pterodactyl-cache
+    restart: always
+    networks:
+      - pterodactyl
+    environment:
+      <<: *base-env
+
+  pterodactyl-panel:
+    image: ghcr.io/pterodactyl/panel:latest
+    container_name: pterodactyl-panel
+    networks:
+      - pterodactyl
+    restart: always
+    volumes:
+      - "${APPDATA_BASE_PATH}/pterodactyl/panel/appvar/:/app/var/"
+      - "${APPDATA_BASE_PATH}/pterodactyl/panel/nginx/:/etc/nginx/http.d/"
+      - "${APPDATA_BASE_PATH}/pterodactyl/panel/logs/:/app/storage/logs"
+    ports:
+      - "${HTTP_PORT}:80"
+      - "${HTTPs_PORT}:443"
+    links:
+      - pterodactyl-database
+      - pterodactyl-cache
+    environment:
+      <<: [*base-env, *panel-environment]
+      DB_PASSWORD: *db-password
+      APP_ENV: "production"
+      APP_ENVIRONMENT_ONLY: "false"
+      CACHE_DRIVER: "redis"
+      SESSION_DRIVER: "redis"
+      QUEUE_DRIVER: "redis"
+      REDIS_HOST: "pterodactyl-cache"
+      DB_HOST: "pterodactyl-database"
+      DB_PORT: "3306"

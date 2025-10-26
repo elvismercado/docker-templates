@@ -1,0 +1,39 @@
+# https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/
+# Cloudflare Tunnel
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-cloudflared}
+
+networks:
+  default:
+    name: ${CONTAINER_NAME:-cloudflared}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:${IMAGE_VERSION:-latest}
+    container_name: ${CONTAINER_NAME:-cloudflared}
+    hostname: ${CONTAINER_NAME:-cloudflared}
+    restart: always
+    networks:
+      - default
+    # # Uncomment to expose Prometheus metrics + /ready endpoint for external monitoring
+    # ports:
+    #   - "${METRICS_PORT:-2000}:2000"
+    environment:
+      <<: *base-env
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+      # # Uncomment to enable metrics server (exposes /metrics, /ready, /debug/pprof)
+      # TUNNEL_METRICS: ${TUNNEL_METRICS:-0.0.0.0:2000}
+    command: tunnel --no-autoupdate run
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/cloudflared", "version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "com.service=${CONTAINER_NAME:-cloudflared}"

@@ -1,0 +1,13 @@
+http:
+  routers:
+    myserver:
+      rule: "Host(`service.example.com`)"
+      service: myserver
+      tls:
+        certResolver: cloudflare
+
+  services:
+    myserver:
+      loadBalancer:
+        servers:
+          - url: https://[${MYSERVER_IP}]:8080

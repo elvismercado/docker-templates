@@ -1,0 +1,4 @@
+container:
+  network: "__NETWORK__"
+  valid_volumes:
+    - /var/run/docker.sock

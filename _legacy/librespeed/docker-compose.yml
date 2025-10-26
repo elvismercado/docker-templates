@@ -1,0 +1,29 @@
+# https://hub.docker.com/r/linuxserver/librespeed
+# Librespeed
+
+# This setup is for running in my Unraid server
+
+version: "3.9"
+
+x-base-env: &base-env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+include:
+  - networks.yml
+
+services:
+  librespeed:
+    image: lscr.io/linuxserver/librespeed:latest
+    container_name: librespeed
+    networks:
+      - librespeed
+    restart: always
+    volumes:
+      - ${APPDATA_BASE_PATH}/librespeed:/config
+    ports:
+      - ${HTTP_PORT}:80
+    environment:
+      <<: *base-env

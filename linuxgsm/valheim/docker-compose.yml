@@ -1,0 +1,59 @@
+# vh vhserver Valheim
+# https://linuxgsm.com/servers/vhserver/
+# https://docs.linuxgsm.com/game-servers/valheim
+# https://valheim.fandom.com/wiki/Dedicated_servers
+# https://nodecraft.com/support/games/valheim/adding-admins-to-your-valheim-server
+# https://github.com/GameServerManagers/docker-gameserver/blob/main/docker-compose/docker-compose-vh.yml
+
+# TODO: setup https://www.gameserverapp.com/?camp=linuxgsm&grp=vhserver
+# TODO: MODS: https://www.reddit.com/r/valheim/comments/yogpxh/anyone_run_mods_on_a_dockerized_valheim_server/
+
+# LinuxGSM user: linuxgsm
+# ./vhserver details
+# ./vhserver update-lgsm
+# LinuxGSM config load order _default.cfg -> common.cfg -> [instance].cfg
+# edit configs inside the mounted volume if there are no env variables available
+
+# -crossplay startupparameter not working for me
+
+# Steam
+# Add to launch options: `-console`
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-linuxgsm-vhserver}
+
+networks:
+  default:
+    name: linuxgsm
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  linuxgsm-vhserver:
+    image: gameservermanagers/gameserver:vh
+    container_name: ${CONTAINER_NAME:-linuxgsm-vhserver}
+    hostname: ${CONTAINER_NAME:-linuxgsm-vhserver}
+    devices:
+      - "${INTEL_GPU:-/dev/null}:/dev/dri" # Hardware Acceleration - Intel
+    restart: always
+    networks:
+      - default
+    ports:
+      - "${GAME_PORT:-2456}:${GAME_PORT:-2456}/udp" # Game Port
+      - "${QUERY_PORT:-2457}:${QUERY_PORT:-2457}/udp" # Query Port
+      - "${RPC_PORT:-2458}:${RPC_PORT:-2458}/udp" # (Game Port + 2), RPC
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/linuxgsm/${CONTAINER_NAME:-linuxgsm-vhserver}:/data
+    environment:
+      <<: *base-env
+    labels:
+      - "com.service=${CONTAINER_NAME:-linuxgsm-vhserver}"
+      - "com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-false}"

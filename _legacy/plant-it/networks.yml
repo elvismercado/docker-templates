@@ -1,0 +1,6 @@
+networks:
+  plant-it:
+    name: plant-it
+    ipam:
+      config:
+        - subnet: 10.2.8.0/24

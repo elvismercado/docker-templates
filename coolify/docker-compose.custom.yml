@@ -1,0 +1,90 @@
+# Coolify — Custom Compose Override
+# https://coolify.io/docs/knowledge-base/custom-compose-overrides
+#
+# This file is merged AFTER the official docker-compose.yml and
+# docker-compose.prod.yml during startup:
+#
+#   docker compose -f docker-compose.yml \
+#                  -f docker-compose.prod.yml \
+#                  -f docker-compose.custom.yml \
+#                  up -d
+#
+# Docker Compose merge rules:
+# - Scalar properties (image, mem_limit): later file wins
+# - List properties (volumes, ports): entries are APPENDED
+# - Use !override to REPLACE a list instead of appending
+#
+# This file is NEVER overwritten by Coolify upgrades or by setup.sh re-runs.
+# The base files (docker-compose.yml, docker-compose.prod.yml) are
+# re-downloaded from CDN on every upgrade — your customizations here persist.
+#
+# Service names must match exactly: coolify, postgres, redis, soketi
+
+services:
+  coolify:
+    hostname: coolify
+    environment:
+      - TZ=${TZ:-Europe/London}
+    labels:
+      - "com.service=coolify"
+
+  postgres:
+    hostname: coolify-db
+    environment:
+      - TZ=${TZ:-Europe/London}
+    # Override the default named volume (coolify-db) with a host path.
+    # This keeps postgres data on the Unraid array / cache instead of
+    # inside the Docker vdisk image, making backups easier.
+    # The !override tag replaces the entire volumes list (instead of appending).
+    volumes: !override
+      - /data/coolify/db:/var/lib/postgresql/data
+    labels:
+      - "com.service=coolify-db"
+
+  redis:
+    hostname: coolify-redis
+    environment:
+      - TZ=${TZ:-Europe/London}
+    # Override the default named volume (coolify-redis) with a host path.
+    # Same rationale as postgres — keeps data on the Unraid array / cache.
+    volumes: !override
+      - /data/coolify/redis:/data
+    labels:
+      - "com.service=coolify-redis"
+
+  soketi:
+    hostname: coolify-realtime
+    environment:
+      - TZ=${TZ:-Europe/London}
+    # Close external WebSocket ports (6001/6002). The browser connects to
+    # Coolify's UI on port 8000, which proxies WebSocket traffic internally.
+    # These ports are only needed if you build external integrations that
+    # connect directly to Coolify's realtime API. To reopen, remove this
+    # override or replace with specific port bindings:
+    #   ports: !override
+    #     - "6001:6001"
+    #     - "6002:6002"
+    ports: !override []
+    labels:
+      - "com.service=coolify-realtime"
+
+# -----------------------------------------------------------------------------
+# EXAMPLES — uncomment and edit as needed
+# -----------------------------------------------------------------------------
+#
+# Resource limits:
+#   services:
+#     coolify:
+#       cpus: 2.0
+#       mem_limit: 2G
+#       mem_reservation: 512M
+#     postgres:
+#       mem_limit: 1G
+#     redis:
+#       mem_limit: 256M
+#
+# Bind Coolify UI to localhost only (requires a reverse proxy):
+#   services:
+#     coolify:
+#       ports:
+#         - "127.0.0.1:8000:8080"

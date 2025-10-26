@@ -1,0 +1,29 @@
+# Prowlarr
+# https://hub.docker.com/r/linuxserver/prowlarr
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:${PROWLARR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-prowlarr
+    hostname: ${CONTAINER_NAME_PREFIX:-media}-prowlarr
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/prowlarr:/config
+    ports:
+      - ${PROWLARR_HTTP_PORT:-9696}:9696
+    environment:
+      <<: *base-env
+    depends_on:
+      - gluetun
+      - transmission
+      - flaresolverr
+    labels:
+      - "com.service=${CONTAINER_NAME_PREFIX:-media}-prowlarr"

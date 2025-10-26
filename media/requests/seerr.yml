@@ -1,0 +1,31 @@
+# Seerr
+# https://docs.seerr.dev/getting-started/docker
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+
+services:
+  seerr:
+    image: ghcr.io/seerr-team/seerr:${SEERR_VERSION:-latest}
+    init: true
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-seerr
+    hostname: ${CONTAINER_NAME_PREFIX:-media}-seerr
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/seerr:/app/config
+    ports:
+      - ${SEERR_HTTP_PORT:-5055}:5055
+    environment:
+      <<: *base-env
+      PORT: 5055
+      # LOG_LEVEL: debug
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    labels:
+      - "com.service=${CONTAINER_NAME_PREFIX:-media}-seerr"

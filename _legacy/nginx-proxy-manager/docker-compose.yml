@@ -1,0 +1,42 @@
+# https://github.com/NginxProxyManager/nginx-proxy-manager
+
+# This setup is for running in my Unraid server
+
+version: "3.8"
+
+# DOCKER_NETWORK_PUBLIC should exist before starting the container
+# DOCKER_NETWORK_PRIVATE should exist before starting the container
+networks:
+  public:
+    name: ${DOCKER_NETWORK_PUBLIC}
+    external: true
+  private:
+    name: ${DOCKER_NETWORK_PRIVATE}
+    external: true
+
+services:
+  nginx-proxy-manager:
+    image: "jc21/nginx-proxy-manager:2.10.4"
+    container_name: ${CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - public
+      - private
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+    volumes:
+      - ${APP_DATA}/data:/data
+      - ${APP_DATA}/letsencrypt:/etc/letsencrypt
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      UMASK: ${UMASK}
+      TZ: ${TZ}
+      DISABLE_IPV6: true
+      X_FRAME_OPTIONS: sameorigin
+    healthcheck:
+      test: ["CMD", "/bin/check-health"]
+      interval: 10s
+      timeout: 3s

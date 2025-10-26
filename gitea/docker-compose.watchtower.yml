@@ -1,0 +1,14 @@
+# Enable/Disable Watchtower
+
+services:
+  server:
+    labels:
+      - "com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-false}"
+
+  db:
+    labels:
+      - "com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-false}"
+
+  runner:
+    labels:
+      - "com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-false}"

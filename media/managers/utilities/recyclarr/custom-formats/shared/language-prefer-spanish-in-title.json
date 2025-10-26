@@ -1,0 +1,20 @@
+{
+  "trash_id": "language-prefer-spanish-in-title",
+  "trash_scores": {
+    "default": 10
+  },
+  "trash_description": "Prefer Language X",
+  "name": "SPAtitle",
+  "includeCustomFormatWhenRenaming": false,
+  "specifications": [
+    {
+      "name": "Spanish/Latino Title",
+      "implementation": "ReleaseTitleSpecification",
+      "negate": false,
+      "required": false,
+      "fields": {
+        "value": "\\b(?:s|e|)(?:panish|spa(n|ñ)ol)|(?:latin(o?|a?))|(?:latdub)\\b"
+      }
+    }
+  ]
+}
