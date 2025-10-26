@@ -1,0 +1,64 @@
+# https://github.com/qdm12/gluetun
+# Gluetun VPN client
+
+# This setup is for running in my Unraid server
+
+version: "3.9"
+
+x-base-env: &base-env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  UMASK: ${UMASK}
+  TZ: ${TZ} # Timezone for accurate log times
+
+# include:
+#   - networks.yml
+networks:
+  gluetun:
+    name: gluetun
+    ipam:
+      config:
+        - subnet: 10.9.1.0/24
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    # image: ghcr.io/qdm12/gluetun
+    # container_name: ${NAME_PREFIX:-gluetun}
+    # container_name: gluetun
+    # line above must be uncommented to allow external containers to connect.
+    # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
+    networks:
+      - gluetun
+    restart: always
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      # - 8888:8888/tcp # HTTP proxy
+      # - 8388:8388/tcp # Shadowsocks
+      # - 8388:8388/udp # Shadowsocks
+    volumes:
+      - ${APPDATA_BASE_PATH}/gluetun:/gluetun
+    environment:
+      <<: *base-env
+      # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
+      VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER}
+      VPN_TYPE: ${VPN_TYPE}
+      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
+      WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES}
+      # SERVER_COUNTRIES: # Comma separated list of countries
+      SERVER_CITIES: ${SERVER_CITIES} # Comma separated list of cities
+      # SERVER_HOSTNAMES: # Comma separated list of server hostnames
+      # ISP: # Comma separated list of ISPs
+      OWNED_ONLY: no # If the VPN server is owned by Mullvad. It defaults to no, meaning it includes all servers. It can be set to yes.
+      # VPN_ENDPOINT_PORT: 51820 # For Wireguard: it can be any value and defaults to 51820
+      # Server list updater
+      # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
+      UPDATER_PERIOD: 24h
+# curl ifconfig.io
+
+# https://www.vpngids.nl/privacy/anoniem-browsen/5-eyes-9-eyes-14-eyes/
+# Cities to concider
+# Iceland, Estonia

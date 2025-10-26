@@ -1,0 +1,54 @@
+# https://hub.docker.com/r/linuxserver/syncthing
+# Syncthing
+
+# This setup is for running in my Unraid server
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-syncthing}
+
+networks:
+  mynetwork:
+    name: ${CONTAINER_NAME:-syncthing}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  syncthing:
+    image: lscr.io/linuxserver/syncthing:latest
+    container_name: ${CONTAINER_NAME:-syncthing}
+    hostname: ${CONTAINER_NAME:-syncthing}
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-syncthing}/config:/config
+      - ${SYNCTHING_DEFAULT_FOLDER:-/tmp/syncthing-default}:/data/syncthing # default folder where all folders should be put
+    ports:
+      - ${HTTP_PORT:-8384}:8384
+      - ${TCP_PORT:-22000}:22000/tcp # TCP based sync protocol traffic
+      - ${QUIC_PORT:-22000}:22000/udp # QUIC based sync protocol traffic
+      - ${DISCOVERY_PORT:-21027}:21027/udp # for discovery broadcasts on IPv4 and multicasts on IPv6
+    environment:
+      <<: *base-env
+    labels:
+      - "com.service=${CONTAINER_NAME:-syncthing}"
+      - "com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-false}"
+# README
+
+# Default Folder:
+# - Set a default folder shared accross all devices called `syncthing` for quick synching of data
+
+# File Versioning
+# - Use Simple file versioning with 7 days cleanup and max 3 versions
+
+# local accass
+# see: https://docs.syncthing.net/users/firewall.html#local-discovery
+# add comma seperated list of adresses: `tcp://192.168.1.xxx:22000, dynamic`

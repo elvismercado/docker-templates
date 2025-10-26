@@ -1,0 +1,8 @@
+[[roles]]
+name = "public"
+routes = [
+  "GET /v1/publicip/ip",
+  "GET /v1/dns/status",
+  "GET /v1/updater/status"
+]
+auth = "none"

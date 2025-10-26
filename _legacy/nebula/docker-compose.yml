@@ -1,0 +1,36 @@
+# https://github.com/slackhq/nebula
+# Nebula
+
+# This setup is for running in my Unraid server
+
+version: "3.9"
+
+x-base-env: &base-env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+# include:
+#   - networks.yml
+networks:
+  nebula:
+    name: nebula
+    ipam:
+      driver: default
+
+services:
+  nebula:
+    image: nebulaoss/nebula
+    container_name: nebula
+    networks:
+      - nebula
+    cap_add:
+      - NET_ADMIN
+    restart: always
+    volumes:
+      - ${APPDATA_BASE_PATH}/nebula/config:/config
+    ports:
+      - 4242:4242/udp
+    environment:
+      <<: *base-env

@@ -1,0 +1,132 @@
+# see https://docs.searxng.org/admin/settings/settings.html#settings-use-default-settings
+use_default_settings:
+  engines:
+    keep_only:
+      # - google
+      # - google images
+      # - google videos
+      # - google news
+      # - bing
+      # - bing images
+      # - bing videos
+      # - bing news
+      # - mojeek
+      # - mojeek images
+      # - mojeek news
+      - brave
+      - brave.images
+      - brave.videos
+      - brave.news
+      - duckduckgo
+      - duckduckgo images
+      - duckduckgo videos
+      - duckduckgo news
+      - startpage
+      - startpage images
+      - startpage news
+        
+general:
+  debug: false
+  instance_name: "SearXNG"
+  privacypolicy_url: false
+  donation_url: false
+  contact_url: false
+  enable_metrics: true
+
+brand:
+  issue_url: ""
+  docs_url: ""
+  public_instances: ""
+  wiki_url: "false"
+
+search:
+  safe_search: 0
+  autocomplete: brave
+  autocomplete_min: 4
+  favicon_resolver: "duckduckgo"
+  default_lang: all
+  languages:
+    - all
+    - nl
+    - en
+    - es
+
+server:
+  secret_key: "i-have-an-ultra-secret-key-that-no-one-knows1"
+  image_proxy: true
+  default_http_headers:
+    X-Content-Type-Options: nosniff
+    X-Download-Options: noopen
+    X-Robots-Tag: noindex, nofollow
+    Referrer-Policy: no-referrer
+    X-Frame-Options: SAMEORIGIN
+    X-Content-Security-Policy: "default-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self';"
+    X-XSS-Protection: "1; mode=block"
+
+redis:
+  url: redis://searxng-redis:6379/0
+
+ui:
+  static_use_hash: true
+  results_on_new_tab: true
+  theme_args:
+    simple_style: dark
+
+# Configuration of the "Hostnames plugin":
+#
+# hostnames:
+#   replace:
+#     '(.*\.)?youtube\.com$': 'invidious.example.com'
+#     '(.*\.)?youtu\.be$': 'invidious.example.com'
+#     '(.*\.)?reddit\.com$': 'teddit.example.com'
+#     '(.*\.)?redd\.it$': 'teddit.example.com'
+#     '(www\.)?twitter\.com$': 'nitter.example.com'
+#   remove:
+#     - '(.*\.)?facebook.com$'
+#   low_priority:
+#     - '(.*\.)?google(\..*)?$'
+#   high_priority:
+#     - '(.*\.)?wikipedia.org$'
+
+categories_as_tabs:
+  general:
+  images:
+  videos:
+  news:
+  # map:
+  # music:
+  # it:
+  # science:
+  # files:
+  # social media:
+
+engines:
+  # General
+  - name: google
+    disabled: false
+  - name: bing
+    disabled: false
+  - name: mojeek
+    disabled: false
+
+  # Images
+  - name: google images
+    disabled: false
+  - name: bing images
+    disabled: false
+  - name: mojeek images
+    disabled: false
+
+  # Videos
+  - name: google videos
+    disabled: false
+  - name: bing videos
+    disabled: false
+
+  # News
+  - name: google news
+    disabled: false
+  - name: bing news
+    disabled: false
+  - name: mojeek news
+    disabled: false

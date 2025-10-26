@@ -1,0 +1,35 @@
+http:
+  routers:
+    nextcloud-yuna:
+      rule: "Host(`mydomain.com`)"
+      entrypoints:
+        - "https"
+      service: nextcloud-yuna
+      middlewares:
+        - nextcloud-yuna-chain
+      tls:
+        certresolver: "cloudflare"
+
+  services:
+    nextcloud-yuna:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.40.2:11000"
+
+  middlewares:
+    nextcloud-yuna-secure-headers:
+      headers:
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        referrerPolicy: "same-origin"
+
+    https-redirect:
+      redirectscheme:
+        scheme: https
+
+    nextcloud-yuna-chain:
+      chain:
+        middlewares:
+          # - ... (e.g. rate limiting middleware)
+          - https-redirect
+          - nextcloud-yuna-secure-headers

@@ -1,0 +1,115 @@
+# TransmissionBT
+# https://hub.docker.com/r/linuxserver/transmission
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+
+  # Docker Mods
+  # https://mods.linuxserver.io/?mod=transmission
+  DOCKER_MODS: linuxserver/mods:transmission-env-var-settings
+# linuxserver/mods:transmission-floodui
+# linuxserver/mods:transmission-transmissionic
+# linuxserver/mods:transmission-trguing
+
+  # transmission-env-var-settings
+  TRANSMISSION_ALT_SPEED_ENABLED: false
+  TRANSMISSION_ALT_SPEED_UP: 3125 # KB/s
+  TRANSMISSION_ALT_SPEED_DOWN: 12500 # KB/s
+  TRANSMISSION_SPEED_LIMIT_DOWN: 25000 # KB/s
+  TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED: true
+  TRANSMISSION_SPEED_LIMIT_UP: 6250 # KB/s
+  TRANSMISSION_SPEED_LIMIT_UP_ENABLED: true
+  TRANSMISSION_UPLOAD_SLOTS_PER_TORRENT: 28
+  TRANSMISSION_DOWNLOAD_DIR: /media/torrents
+  TRANSMISSION_INCOMPLETE_DIR: /media/torrents/incomplete
+  TRANSMISSION_INCOMPLETE_DIR_ENABLED: true
+  TRANSMISSION_PREALLOCATION: 2 # Number (0 = Off, 1 = Fast, 2 = Full (slower but reduces disk fragmentation), default = 1)
+  TRANSMISSION_RENAME_PARTIAL_FILES: true
+  TRANSMISSION_START_ADDED_TORRENTS: true
+  TRANSMISSION_TRASH_CAN_ENABLED: true
+  TRANSMISSION_TRASH_ORIGINAL_TORRENT_FILES: false
+  TRANSMISSION_WATCH_DIR: /media/torrents/watch
+  TRANSMISSION_WATCH_DIR_ENABLED: true
+  TRANSMISSION_PEER_PORT: 51413
+  TRANSMISSION_PEER_LIMIT_GLOBAL: 480
+  TRANSMISSION_PEER_LIMIT_PER_TORRENT: 120
+  TRANSMISSION_PEER_PORT_RANDOM_ON_START: false
+  TRANSMISSION_PEER_PORT_RANDOM_ENABLED: true
+  TRANSMISSION_PORT_FORWARDING_ENABLED: true
+  TRANSMISSION_DOWNLOAD_QUEUE_ENABLED: true
+  TRANSMISSION_DOWNLOAD_QUEUE_SIZE: 20
+  # When true, torrents that have not shared data for queue-stalled-minutes are treated as 'stalled' and are not counted against the download-queue-size and seed-queue-size limits.
+  TRANSMISSION_QUEUE_STALLED_ENABLED: true
+  TRANSMISSION_QUEUE_STALLED_MINUTES: 1440 # See Lat-Team
+  TRANSMISSION_SEED_QUEUE_ENABLED: true
+  TRANSMISSION_SEED_QUEUE_SIZE: 40
+  TRANSMISSION_IDLE_SEEDING_LIMIT: 1440 # See Lat-Team
+  TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED: true
+  TRANSMISSION_RATIO_LIMIT: 2
+  TRANSMISSION_RATIO_LIMIT_ENABLED: true
+  TRANSMISSION_DHT_ENABLED: true
+  TRANSMISSION_ENCRYPTION: 2
+  TRANSMISSION_LPD_ENABLED: true
+  TRANSMISSION_PEX_ENABLED: true
+  TRANSMISSION_UTP_ENABLED: true
+
+services:
+  transmission:
+    image: lscr.io/linuxserver/transmission:${TRANSMISSION_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-transmission
+    # hostname: ${CONTAINER_NAME_PREFIX:-media}-transmission
+    restart: always
+    # networks:
+    #   - default
+    network_mode: "service:gluetun"
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/transmission:/config
+      - ${MEDIA_PATH}:/media # Prefferences > "Download to:"
+    # Ports are commented out because of passing through `gluetun`
+    # ports:
+    #   - ${TRANSMISSION_HTTP_PORT:-9091}:9091 # WebUI
+    #   - ${TRANSMISSION_TORRENT_PORT:-51413}:51413 # Torrent Port TCP
+    #   - ${TRANSMISSION_TORRENT_PORT:-51413}:51413/udp # Torrent Port UDP
+    environment:
+      <<: *base-env
+      TRANSMISSION_WEB_HOME: ${TRANSMISSION_WEB_HOME}
+      PEERPORT: ${TRANSMISSION_TORRENT_PORT:-51413}
+      TRANSMISSION_PEER_PORT: ${TRANSMISSION_TORRENT_PORT:-51413}
+    depends_on:
+      - gluetun
+    labels:
+      - "com.service=${CONTAINER_NAME_PREFIX:-media}-transmission"
+
+  transmission-lat-team:
+    image: lscr.io/linuxserver/transmission:${TRANSMISSION_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-transmission-lat-team
+    # hostname: ${CONTAINER_NAME_PREFIX:-media}-transmission-lat-team
+    restart: always
+    # networks:
+    #   - default
+    network_mode: "service:gluetun"
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/transmission-lat-team:/config
+      - ${MEDIA_PATH}:/media # Prefferences > "Download to:"
+    # Ports are commented out because of passing through `gluetun`
+    # ports:
+    #   - ${TRANSMISSION_LATTEAM_HTTP:-9092}:9092 # WebUI
+    #   - ${TRANSMISSION_LATTEAM_TORRENT_PORT:-51414}:51414 # Torrent Port TCP
+    #   - ${TRANSMISSION_LATTEAM_TORRENT_PORT:-51414}:51414/udp # Torrent Port UDP
+    environment:
+      <<: *base-env
+      TRANSMISSION_WEB_HOME: ${TRANSMISSION_WEB_HOME}
+      PEERPORT: ${TRANSMISSION_LATTEAM_TORRENT_PORT:-51414}
+      TRANSMISSION_PEER_PORT: ${TRANSMISSION_LATTEAM_TORRENT_PORT:-51414}
+      TRANSMISSION_RPC_PORT: 9092
+      TRANSMISSION_WATCH_DIR_ENABLED: false
+      TRANSMISSION_QUEUE_STALLED_MINUTES: 10080 # Lat-Team is 4 days # set to 7 days
+      TRANSMISSION_IDLE_SEEDING_LIMIT: 10080 # Lat-Team is 4 days # set to 7 days
+      TRANSMISSION_RATIO_LIMIT_ENABLED: false
+    depends_on:
+      - gluetun
+    labels:
+      - "com.service=${CONTAINER_NAME_PREFIX:-media}-transmission-lat-team"

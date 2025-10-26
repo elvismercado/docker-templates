@@ -1,0 +1,44 @@
+# Homer Dashboard
+# https://homer-demo.netlify.app/
+
+# This is a template
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-homer}
+
+networks:
+  mynetwork:
+    name: ${CONTAINER_NAME:-homer}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  homer:
+    image: b4bz/homer:${IMAGE_VERSION:-latest}
+    container_name: ${CONTAINER_NAME:-homer}
+    hostname: ${CONTAINER_NAME:-homer}
+    user: "${UID}:${GID}"
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: ${IP_ADDRESS:-10.42.0.10}
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-homer}/assets:/www/assets
+    ports:
+      - ${HTTP_PORT:-8080}:8080
+    environment:
+      <<: *base-env
+      INIT_ASSETS: 1
+      # SUBFOLDER: /homer
+      PORT: 8080
+      IPV6_DISABLE: 0
+    labels:
+      - "com.service=${CONTAINER_NAME:-homer}"

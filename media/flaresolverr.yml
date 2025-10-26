@@ -1,0 +1,30 @@
+# flaresolverr
+# https://github.com/FlareSolverr/FlareSolverr
+
+x-base-env: &base-env 
+  TZ: ${TZ:-Europe/London}
+
+services:
+  flaresolverr:
+    image: flaresolverr/flaresolverr:${FLARESOLVERR_VERSION:-latest}
+    # container_name: ${CONTAINER_NAME_PREFIX:-media}-flaresolverr # can't set container_name and flaresolverr as container name must be unique
+    hostname: ${CONTAINER_NAME_PREFIX:-media}-flaresolverr
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/flaresolverr:/config
+    # ports:
+    #   - ${FLARESOLVERR_HTTP_PORT:-8191}:8191
+    environment:
+      <<: *base-env
+      LANG: ${LANG:-en_GB}
+      TEST_URL: https://www.wikipedia.org
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_FILE: ${LOG_FILE:-none}
+      LOG_HTML: ${LOG_HTML:-false}
+      CAPTCHA_SOLVER: ${CAPTCHA_SOLVER:-none}
+    deploy:
+      replicas: 3 # can't set container_name and flaresolverr as container name must be unique
+    labels:
+      - "com.service=${CONTAINER_NAME_PREFIX:-media}-flaresolverr"

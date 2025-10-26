@@ -1,0 +1,130 @@
+# Media Stack
+
+# Containers
+# - Huntarr
+# - Jellyfin
+# - Jellyseerr
+# - Kavita
+# - Gluetun
+# - Transmission
+# - FlareSolverr
+# - Autobrr
+# - Prowlarr
+# - Lidarr
+# - Readarr
+# - Radarr
+# - Sonarr
+# - Recyclarr
+# - Bazarr
+# - Homarr
+
+# This setup is for running in my Unraid server
+
+name: media
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+  UID: ${UID}
+  GID: ${GID}
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+
+include:
+  - networks.yml
+
+services:
+
+  jellyfin:
+    extends:
+      file: jellyfin.yml
+      service: jellyfin
+      
+  jellyseerr:
+    extends:
+      file: jellyseerr.yml
+      service: jellyseerr
+
+  huntarr:
+    extends:
+      file: huntarr.yml
+      service: huntarr
+
+  gluetun:
+    extends:
+      file: gluetun.yml
+      service: gluetun
+  transmission:
+    extends:
+      file: transmission.yml
+      service: transmission
+  transmission-lat-team:
+    extends:
+      file: transmission.yml
+      service: transmission-lat-team
+
+  flaresolverr:
+    extends:
+      file: flaresolverr.yml
+      service: flaresolverr
+
+  prowlarr:
+    extends:
+      file: prowlarr.yml
+      service: prowlarr
+
+  radarr-movies-hd:
+    extends:
+      file: radarr.yml
+      service: radarr-movies-hd
+  radarr-movies-anime-hd:
+    extends:
+      file: radarr.yml
+      service: radarr-movies-anime-hd
+
+  sonarr-series-hd:
+    extends:
+      file: sonarr.yml
+      service: sonarr-series-hd
+  sonarr-series-anime-hd:
+    extends:
+      file: sonarr.yml
+      service: sonarr-series-anime-hd
+
+  recyclarr:
+    extends:
+      file: recyclarr.yml
+      service: recyclarr
+
+  # kavita:
+  #   extends:
+  #     file: kavita.yml
+  #     service: kavita
+
+  # # autobrr:
+  # #   extends:
+  # #     file: autobrr.yml
+  # #     service: autobrr
+
+  # lidarr:
+  #   extends:
+  #     file: lidarr.yml
+  #     service: lidarr
+
+  # readarr-books:
+  #   extends:
+  #     file: readarr.yml
+  #     service: readarr-books
+  # readarr-audiobooks:
+  #   extends:
+  #     file: readarr.yml
+  #     service: readarr-audiobooks
+
+  # bazarr-anime:
+  #   extends:
+  #     file: bazarr.yml
+  #     service: bazarr-anime
+  # bazarr-hd:
+  #   extends:
+  #     file: bazarr.yml
+  #     service: bazarr-hd

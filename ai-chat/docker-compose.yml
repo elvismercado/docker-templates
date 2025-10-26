@@ -1,0 +1,95 @@
+# AI Chat @ home
+# https://github.com/ollama/ollama
+# https://github.com/open-webui/open-webui
+# https://hub.docker.com/r/holaflenain/stable-diffusion
+
+# This setup is for running in my Unraid server
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ai-chat
+
+networks:
+  mynetwork:
+    name: ai-chat
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:${OPENWEBUI_IMAGE_VERSION:-main} # main, cuda
+    container_name: openwebui
+    hostname: openwebui
+    restart: always
+    networks:
+      - mynetwork
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/ai-chat/openwebui:/app/backend/data
+    ports:
+      - ${OPENWEBUI_HTTP_PORT:-3000}:8080
+    environment:
+      <<: *base-env
+      ENABLE_SIGNUP_PASSWORD_CONFIRMATION: true
+      WEBUI_SECRET_KEY: ${WEBUI_SECRET_KEY:-$(openssl rand -hex 32)}
+      OLLAMA_BASE_URL: http://ollama:${OLLAMA_HTTP_PORT:-11434}
+    # # NVIDIA section START
+    #   NVIDIA_VISIBLE_DEVICES: all # Hardware Acceleration - Only NVIDIA
+    # runtime: nvidia # Hardware Acceleration - Only NVIDIA
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    # # NVIDIA section END
+    depends_on:
+      ollama:
+        condition: service_started
+      # stable-diffusion:
+      #   condition: service_started
+
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    hostname: ollama
+    restart: always
+    networks:
+      - mynetwork
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/ai-chat/ollama:/root/.ollama
+    ports:
+      - ${OLLAMA_HTTP_PORT:-11434}:11434
+    environment:
+      <<: *base-env
+    # # NVIDIA section START
+    #   NVIDIA_VISIBLE_DEVICES: all # Hardware Acceleration - Only NVIDIA
+    # runtime: nvidia # Hardware Acceleration - Only NVIDIA
+    # # NVIDIA section END
+
+  # stable-diffusion:
+  #   image: holaflenain/stable-diffusion
+  #   container_name: stable-diffusion
+  #   networks:
+  #     - ai-chat
+  #   restart: always
+  #   volumes:
+  #     - ${APPDATA_BASE_PATH}/ai-chat/stable-diffusion:/config
+  #   ports:
+  #     - ${STABLEDIFFUSION_HTTP_PORT}:9000/tcp
+  #   environment:
+  #     <<: *base-env
+  #     # WEBUI_VERSION: '02' # Automatic1111
+  #     WEBUI_VERSION: "02.forge" # An optimized fork of Automatic1111
+  #   # # NVIDIA section START
+  #   #   NVIDIA_VISIBLE_DEVICES: all # Hardware Acceleration - Only NVIDIA
+  #   # runtime: nvidia # Hardware Acceleration - Only NVIDIA
+  #   # # NVIDIA section END

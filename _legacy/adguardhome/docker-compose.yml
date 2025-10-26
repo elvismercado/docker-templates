@@ -1,0 +1,59 @@
+# https://hub.docker.com/r/adguard/adguardhome
+# https://github.com/bakito/adguardhome-sync
+# AdGuardHome
+# AdGuardHome sync
+
+# This setup is for running in my Unraid server
+
+version: "3.9"
+
+x-base-env: &base-env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+# include:
+#   - networks.yml
+networks:
+  adguardhome:
+    name: adguardhome
+    ipam:
+      config:
+        - subnet: 10.3.4.0/24
+
+services:
+  adguardhome: # Only for public DoT or DoH or DoQ
+    image: adguard/adguardhome
+    container_name: adguardhome
+    user: "${PUID}:${PGID}"
+    networks:
+      - adguardhome
+    restart: always
+    volumes:
+      - ${APPDATA_BASE_PATH}/adguardhome/work:/opt/adguardhome/work
+      - ${APPDATA_BASE_PATH}/adguardhome/conf:/opt/adguardhome/conf
+    ports:
+      - 53:53/tcp # plain DNS
+      - 53:53/udp # plain DNS
+
+      # - 67:67/udp # add if you intend to use AdGuard Home as a DHCP server
+      # - 68:68/tcp # add if you intend to use AdGuard Home as a DHCP server
+      # - 68:68/udp # add if you intend to use AdGuard Home as a DHCP server
+
+      # - ${HTTP_PORT:-80}:80/tcp # admin panel (default on first setup/onboarding) (change back to 3000 during initial setup to keep the default)
+      # - ${HTTPS_PORT:-443}:443/tcp # HTTPS/DNS-over-HTTPS⁠ server
+      # - ${HTTPS_PORT:-443}:443/udp # HTTPS/DNS-over-HTTPS⁠ server
+
+      - ${ADMIN_PORT:-3000}:3000/tcp # admin panel (available during initial setup)
+
+      # - 853:853/tcp # DNS-over-TLS⁠ server
+
+      # - 784:784/udp # DNS-over-QUIC⁠ server. You may only leave one or two of these
+      # - 853:853/udp # DNS-over-QUIC⁠ server. You may only leave one or two of these
+      # - 8853:8853/udp # DNS-over-QUIC⁠ server. You may only leave one or two of these
+
+      # - 5443:5443/tcp # DNSCrypt⁠ server
+      # - 5443:5443/udp # DNSCrypt⁠ server
+    environment:
+      <<: *base-env

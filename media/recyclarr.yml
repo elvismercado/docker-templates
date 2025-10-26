@@ -1,0 +1,26 @@
+# Recyclarr
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+
+services:
+  recyclarr:
+    image: recyclarr/recyclarr:${RECYCLARR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-recyclarr
+    hostname: ${CONTAINER_NAME_PREFIX:-media}-recyclarr
+    restart: always
+    networks:
+      - default
+    user: "${UID}:${GID}"
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/recyclarr/config:/config
+    environment:
+      <<: *base-env
+      RECYCLARR_CREATE_CONFIG: false
+    depends_on:
+      - sonarr-series-hd
+      - sonarr-series-anime-hd
+      - radarr-movies-hd
+      - radarr-movies-anime-hd
+    labels:
+      - "com.service=${CONTAINER_NAME_PREFIX:-media}-recyclarr"

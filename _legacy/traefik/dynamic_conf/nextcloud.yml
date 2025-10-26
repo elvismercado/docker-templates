@@ -1,0 +1,35 @@
+http:
+  routers:
+    nextcloud:
+      rule: "Host(`mydomain.com`)"
+      entrypoints:
+        - "https"
+      service: nextcloud
+      middlewares:
+        - nextcloud-chain
+      tls:
+        certresolver: "cloudflare"
+
+  services:
+    nextcloud:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.60.2:11000"
+
+  middlewares:
+    nextcloud-secure-headers:
+      headers:
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        referrerPolicy: "same-origin"
+
+    https-redirect:
+      redirectscheme:
+        scheme: https
+
+    nextcloud-chain:
+      chain:
+        middlewares:
+          # - ... (e.g. rate limiting middleware)
+          - https-redirect
+          - nextcloud-secure-headers

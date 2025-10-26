@@ -1,0 +1,6 @@
+networks:
+  arksurvivalserver:
+    name: arksurvivalserver
+    ipam:
+      config:
+        - subnet: 10.3.4.0/24

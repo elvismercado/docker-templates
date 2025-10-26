@@ -1,0 +1,6 @@
+# Enable/Disable Portainer legacy UI
+
+services:  
+  portainer:
+    ports:
+      - ${HTTP_PORT:-9000}:9000/tcp # UI legacy

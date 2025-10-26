@@ -1,0 +1,146 @@
+# Coolify
+# https://coolify.io/docs/get-started/installation#manual-installation
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-coolify}
+
+networks:
+  default:
+    name: ${CONTAINER_NAME:-coolify}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  coolify:
+    image: "${REGISTRY_URL:-ghcr.io}/coollabsio/coolify:${LATEST_IMAGE:-latest}"
+    container_name: ${CONTAINER_NAME:-coolify}
+    hostname: ${CONTAINER_NAME:-coolify}
+    restart: always
+    networks:
+      - default
+    extra_hosts:
+      - host.docker.internal:${HOST_GATEWAY:-host-gateway}
+    volumes:
+      - type: bind
+        source:  ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-coolify}/data/coolify/source/.env
+        target: /var/www/html/.env
+        read_only: true
+      -  ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-coolify}/data/coolify/ssh:/var/www/html/storage/app/ssh
+      -  ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-coolify}/data/coolify/applications:/var/www/html/storage/app/applications
+      -  ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-coolify}/data/coolify/databases:/var/www/html/storage/app/databases
+      -  ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-coolify}/data/coolify/services:/var/www/html/storage/app/services
+      -  ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-coolify}/data/coolify/backups:/var/www/html/storage/app/backups
+      -  ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-coolify}/data/coolify/webhooks-during-maintenance:/var/www/html/storage/app/webhooks-during-maintenance
+    working_dir: /var/www/html
+    ports:
+      - "${HTTP_PORT:-8000}:8080"
+    expose:
+      - "${HTTP_PORT:-8000}"
+    environment:
+      <<: *base-env
+      APP_ENV: ${APP_ENV:-production}
+      PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT:-256M}
+      PHP_FPM_PM_CONTROL: ${PHP_FPM_PM_CONTROL:-dynamic}
+      PHP_FPM_PM_START_SERVERS: ${PHP_FPM_PM_START_SERVERS:-1}
+      PHP_FPM_PM_MIN_SPARE_SERVERS: ${PHP_FPM_PM_MIN_SPARE_SERVERS:-1}
+      PHP_FPM_PM_MAX_SPARE_SERVERS: ${PHP_FPM_PM_MAX_SPARE_SERVERS:-10}
+    env_file:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-coolify}/data/coolify/source/.env
+    healthcheck:
+      test: curl --fail http://127.0.0.1:8080/api/health || exit 1
+      interval: 5s
+      retries: 10
+      timeout: 2s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      soketi:
+        condition: service_healthy
+    labels:
+      - "com.service=${CONTAINER_NAME:-coolify}"
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: ${CONTAINER_NAME:-coolify}-db
+    hostname: ${CONTAINER_NAME:-coolify}-db
+    restart: always
+    networks:
+      - default
+    volumes:
+      # - coolify-db:/var/lib/postgresql/data # should we keep it as docker volume or path on disk?
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-coolify}/coolify-db:/var/lib/postgresql/data
+    environment:
+      <<: *base-env
+      POSTGRES_USER: "${DB_USERNAME}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${DB_DATABASE:-coolify}"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME}", "-d", "${DB_DATABASE:-coolify}" ]
+      interval: 5s
+      retries: 10
+      timeout: 2s
+    labels:
+      - "com.service=${CONTAINER_NAME:-coolify}-db"
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    container_name: ${CONTAINER_NAME:-coolify}-redis
+    hostname: ${CONTAINER_NAME:-coolify}-redis
+    restart: always
+    networks:
+      - default
+    volumes:
+      - coolify-redis:/data
+    environment:
+      <<: *base-env
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+    healthcheck:
+      test: redis-cli ping
+      interval: 5s
+      retries: 10
+      timeout: 2s
+    labels:
+      - "com.service=${CONTAINER_NAME:-coolify}-redis"
+
+  soketi:
+    image: '${REGISTRY_URL:-ghcr.io}/coollabsio/coolify-realtime:1.0.10'
+    container_name: ${CONTAINER_NAME:-coolify}-realtime
+    hostname: ${CONTAINER_NAME:-coolify}-realtime
+    restart: always
+    networks:
+      - default
+    extra_hosts:
+      - host.docker.internal:${HOST_GATEWAY:-host-gateway}
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-coolify}/data/coolify/ssh:/var/www/html/storage/app/ssh
+    environment:
+      <<: *base-env
+      APP_NAME: "${APP_NAME:-Coolify}"
+      SOKETI_DEBUG: "${SOKETI_DEBUG:-false}"
+      SOKETI_DEFAULT_APP_ID: "${PUSHER_APP_ID}"
+      SOKETI_DEFAULT_APP_KEY: "${PUSHER_APP_KEY}"
+      SOKETI_DEFAULT_APP_SECRET: "${PUSHER_APP_SECRET}"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://127.0.0.1:6001/ready && wget -qO- http://127.0.0.1:6002/ready || exit 1" ]
+      interval: 5s
+      retries: 10
+      timeout: 2s
+    labels:
+      - "com.service=${CONTAINER_NAME:-coolify}-realtime"
+
+volumes:
+  # coolify-db:
+  #   name: coolify-db
+  coolify-redis:
+    name: coolify-redis

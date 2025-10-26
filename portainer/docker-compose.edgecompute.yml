@@ -1,0 +1,6 @@
+# Enable/Disable Portainer Edge Compute
+
+services:
+  portainer:
+    ports:
+      - ${EDGECOMPUTE_PORT:-8000}:8000/tcp

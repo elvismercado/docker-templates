@@ -1,0 +1,81 @@
+# changedetection.io
+# https://github.com/dgtlmoon/changedetection.io/blob/master/docker-compose.yml
+
+# This setup is for running in my Unraid server
+
+# TODO: change to https://www.linuxserver.io/?
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-changedetectionio}
+
+networks:
+  mynetwork:
+    name: ${CONTAINER_NAME:-changedetectionio}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  changedetectionio:
+    image: ghcr.io/dgtlmoon/changedetection.io
+    container_name: ${CONTAINER_NAME:-changedetectionio}
+    hostname: ${CONTAINER_NAME:-changedetectionio}
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: ${IP_ADDRESS:-10.42.0.10}
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-changedetectionio}:/datastore
+    ports:
+      - ${HTTP_PORT:-5000}:5000
+    environment:
+      <<: *base-env
+      # PLAYWRIGHT_DRIVER_URL: ws://${CONTAINER_NAME:-changedetectionio}-browser-sockpuppet-chrome:3000/?stealth=1&--disable-web-security=true
+      PLAYWRIGHT_DRIVER_URL: ws://${CONTAINER_NAME:-changedetectionio}-browser-sockpuppet-chrome:3000
+      BASE_URL: ${BASE_URL}
+      USE_X_SETTINGS: 1
+      HIDE_REFERER: true
+      FETCH_WORKERS: 10
+    depends_on:
+      browser-sockpuppet-chrome:
+        condition: service_started
+    labels:
+      - "com.service=${CONTAINER_NAME:-changedetectionio}"
+
+  browser-sockpuppet-chrome:
+    image: dgtlmoon/sockpuppetbrowser:latest
+    container_name: ${CONTAINER_NAME:-changedetectionio}-browser-sockpuppet-chrome
+    hostname: ${CONTAINER_NAME:-changedetectionio}-browser-sockpuppet-chrome
+    restart: always
+    networks:
+      - mynetwork
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      <<: *base-env
+      SCREEN_WIDTH: 1920
+      SCREEN_HEIGHT: 1024
+      SCREEN_DEPTH: 16
+      MAX_CONCURRENT_SESSIONS: 10
+      # ENABLE_DEBUGGER: false
+      # PREBOOT_CHROME: true
+      # KEEP_ALIVE: true
+      # FUNCTION_ENABLE_INCOGNITO_MODE: true
+      # CONNECTION_TIMEOUT: 60000
+      # MAX_QUEUE_LENGTH: 5
+      # CHROME_REFRESH_TIME: 3600000
+      # DEFAULT_BLOCK_ADS: false
+      # DEFAULT_STEALTH: true
+      # WORKSPACE_DELETE_EXPIRED: true
+      # WORKSPACE_EXPIRE_DAYS: 2
+      # # Ignore HTTPS errors, like for self-signed certs
+      # DEFAULT_IGNORE_HTTPS_ERRORS: true
+    labels:
+      - "com.service=${CONTAINER_NAME:-changedetectionio}-browser-sockpuppet-chrome"

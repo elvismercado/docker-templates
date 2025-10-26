@@ -1,0 +1,41 @@
+# Ark Survival Evolved server
+# https://linuxgsm.com/
+# https://hub.docker.com/r/gameservermanagers/gameserver
+# https://linuxgsm.com/servers/arkserver/
+# https://github.com/GameServerManagers/Game-Server-Configs/tree/main/ark
+
+# This setup is for running in my Unraid server
+
+version: "3.9"
+
+x-base-env: &base-env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+networks:
+  arksurvivalserver:
+    name: arksurvivalserver
+    ipam:
+      config:
+        - subnet: 10.33.33.0/24
+
+services:
+  linuxgsm-ark:
+    image: gameservermanagers/gameserver:ark
+    container_name: arkserver
+    networks:
+      - arksurvivalserver
+    restart: always
+    volumes:
+      - ${APPDATA_BASE_PATH}/arkserver:/data
+    ports:
+      - 7777:7777/udp
+      - 7778:7778/udp
+      - 27015:27015/udp
+      - 27020:27020/tcp
+    environment:
+      <<: *base-env
+      UID: ${PUID}
+      GID: ${PGID}

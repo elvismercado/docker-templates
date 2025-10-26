@@ -1,0 +1,9 @@
+networks:
+  pterodactyl:
+    name: pterodactyl
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.33.35.0/24
+    driver_opts:
+      com.docker.network.bridge.name: pterodactyl

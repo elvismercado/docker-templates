@@ -1,0 +1,6 @@
+networks:
+  rustdesk:
+    name: rustdesk
+    ipam:
+      config:
+        - subnet: 10.3.2.0/24

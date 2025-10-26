@@ -1,0 +1,58 @@
+# https://github.com/lloesche/valheim-server-docker
+# Valheim Server in a Docker Container (with BepInEx and ValheimPlus support)
+
+# Client
+# Grab latest version and drop in steam game folder
+# [Right-Click] Valheim > Manage > Browse local files
+# https://github.com/Grantapher/ValheimPlus/releases/download/0.9.16.2/WindowsClient.zip
+# If you need to disable BepInEx, rename the folder and restart game
+# rename again to enable it
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-valheim_lloesche}
+
+networks:
+  default:
+    name: valheim_lloesche
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  valheim_lloesche:
+    image: ghcr.io/lloesche/valheim-server
+    container_name: ${CONTAINER_NAME:-valheim_lloesche}
+    hostname: ${CONTAINER_NAME:-valheim_lloesche}
+    cap_add:
+      - sys_nice
+    devices:
+      - "${INTEL_GPU:-/dev/null}:/dev/dri" # Hardware Acceleration - Intel
+    stop_grace_period: 2m
+    restart: always
+    networks:
+      - default
+    ports:
+      - "${GAME_PORT:-2456}:${GAME_PORT:-2456}/udp" # Game Port
+      - "${QUERY_PORT:-2457}:${QUERY_PORT:-2457}/udp" # Query Port
+      - "${RPC_PORT:-2458}:${RPC_PORT:-2458}/udp" # (Game Port + 2), RPC
+      - "${SUPERVISOR_PORT:-2455}:9001/tcp" # SUPERVISOR_PORT
+      - "${STATUS_PORT:-2454}:80/tcp" # STATUS_PORT
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim-server/config:/config
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim-server/data:/opt/valheim
+    environment:
+      <<: *base-env
+    env_file:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/.env
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim_lloesche.env
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-valheim_lloesche}/valheim_plus.env
+    labels:
+      - "com.service=${CONTAINER_NAME:-valheim_lloesche}"
+      - "com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-false}"

@@ -1,0 +1,8 @@
+DOCKER_NETWORK_PUBLIC=public-net
+DOCKER_NETWORK_PRIVATE=private-net
+CONTAINER_NAME=nginx-proxy-manager
+APP_DATA=/mnt/user/appdata/nginx-proxy-manager
+PUID=99
+PGID=100
+UMASK=022
+TZ=Europe/London

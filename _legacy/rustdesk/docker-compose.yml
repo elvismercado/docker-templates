@@ -1,0 +1,61 @@
+# https://rustdesk.com/docs/en/self-host/install/
+# Rustdesk
+
+# This setup is for running in my Unraid server
+
+# Ports:
+# TCP (21115, 21116, 21117, 21118, 21119)
+# UDP (21116)
+
+version: "3.9"
+
+x-base-env: &base-env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+include:
+  - networks.yml
+
+services:
+  hbbs:
+    image: rustdesk/rustdesk-server:latest
+    container_name: rustdesk-hbbs
+    hostname: rustdesk-hbbs
+    restart: always
+    # user: "${PUID}:${PGID}"
+    networks:
+      - rustdesk
+    volumes:
+      - ${APPDATA_BASE_PATH}/rustdesk-server:/root
+    depends_on:
+      - hbbr
+    ports:
+      - 21114:21114/tcp # Web console in Pro version
+      - 21115:21115/tcp # NAT type test
+      - 21116:21116/tcp # TCP hole punching and connection service
+      - 21116:21116/udp # ID registration and heartbeat service
+      - 21118:21118/tcp # support web clients
+    environment:
+      <<: *base-env
+    # command: hbbs -k _ # -k _ enforces use of encrypted connection
+    command: hbbs
+
+  hbbr:
+    image: rustdesk/rustdesk-server:latest
+    container_name: rustdesk-hbbr
+    hostname: rustdesk-hbbr
+    restart: always
+    # user: "${PUID}:${PGID}"
+    networks:
+      - rustdesk
+    volumes:
+      - ${APPDATA_BASE_PATH}/rustdesk-server:/root
+    ports:
+      - 21117:21117/tcp # Relay services
+      - 21119:21119/tcp # support web clients
+    environment:
+      <<: *base-env
+    # command: hbbr -k _ # -k _ enforces use of encrypted connection
+    command: hbbr

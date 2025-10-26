@@ -1,0 +1,29 @@
+# Heimdall Dashboard
+
+# This setup is for running in my Unraid server
+
+version: "3.9"
+
+x-base-env: &base-env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+include:
+  - networks.yml
+
+services:
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: ${CONTAINER_NAME:-heimdall}
+    networks:
+      - heimdall
+    restart: always
+    ports:
+      - ${HTTP_PORT}:80
+      - ${HTTPS_PORT}:443
+    volumes:
+      - ${APPDATA_BASE_PATH}/heimdall:/config
+    environment:
+      <<: *base-env

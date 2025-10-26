@@ -1,0 +1,6 @@
+networks:
+  gluetun:
+    name: gluetun
+    ipam:
+      config:
+        - subnet: 10.9.1.0/24

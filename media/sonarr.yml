@@ -1,0 +1,53 @@
+# Sonarr
+# https://hub.docker.com/r/linuxserver/sonarr
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+
+services:
+  # TV Series
+  sonarr-series-hd:
+    image: lscr.io/linuxserver/sonarr:${SONARR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-sonarr-series-hd
+    hostname: ${CONTAINER_NAME_PREFIX:-media}-sonarr-series-hd
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/sonarr-series-hd:/config
+      - ${MEDIA_PATH}:/media
+    ports:
+      - ${SONARR_HTTP_PORT:-8989}:8989 # WebUI
+    environment:
+      <<: *base-env
+      DOCKER_MODS: linuxserver/mods:radarr-striptracks
+      STRIPTRACKS_ARGS: "--audio :org:eng:spa:nld:dut:jpn:chi:zho:und --subs :org:eng:spa:nld:dut --reorder"
+    depends_on:
+      - prowlarr
+    labels:
+      - "com.service=${CONTAINER_NAME_PREFIX:-media}-sonarr-series-hd"
+
+  # Anime Series
+  sonarr-series-anime-hd:
+    image: lscr.io/linuxserver/sonarr:${SONARR_VERSION:-latest}
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-sonarr-series-anime-hd
+    hostname: ${CONTAINER_NAME_PREFIX:-media}-sonarr-series-anime-hd
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/sonarr-series-anime-hd:/config
+      - ${MEDIA_PATH}:/media
+    ports:
+      - ${SONARR_ANIME_HTTP_PORT:-8990}:8989 # WebUI
+    environment:
+      <<: *base-env
+      DOCKER_MODS: linuxserver/mods:radarr-striptracks
+      STRIPTRACKS_ARGS: "--audio :org:eng:spa:nld:dut:jpn:chi:zho:und --subs :org:eng:spa:nld:dut --reorder"
+    depends_on:
+      - prowlarr
+    labels:
+      - "com.service=${CONTAINER_NAME_PREFIX:-media}-sonarr-series-anime-hd"

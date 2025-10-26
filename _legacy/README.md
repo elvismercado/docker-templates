@@ -1,0 +1,1 @@
+Just putting stuff here while i make the templates more generic, and try to remove personal info

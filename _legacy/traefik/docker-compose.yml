@@ -1,0 +1,100 @@
+# Traefik
+# DNS Challenge (Cloudflare)
+
+# This setup is for running in my Unraid server
+
+version: "3.9"
+
+include:
+  - networks.yml
+  - ../dashy/networks.yml
+  - ../media/networks.yml
+
+services:
+  traefik:
+    image: traefik:v2.10
+    container_name: ${CONTAINER_NAME}
+    networks:
+      - traefik
+      - dashy
+      - media-net
+    restart: always
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--api.debug=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.http.http.redirections.entrypoint.to=https"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53"
+      # - "--certificatesresolvers.cloudflare.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.cloudflare.acme.email=${LETSENCRYPT_EMAIL}"
+      - "--certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json"
+      - "--serverstransport.insecureskipverify=true"
+      # - "--configFile=/etc/traefik/traefik.yml"
+      - "--providers.file.directory=/etc/traefik/dynamic_conf"
+    ports:
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
+      # - "${WEB_UI}:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "${APP_DATA}/letsencrypt:/letsencrypt"
+      # - "${APP_DATA}/traefik.yml:/etc/traefik/traefik.yml"
+      - "${APP_DATA}/dynamic_conf:/etc/traefik/dynamic_conf"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.entrypoints=http"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)"
+      # - "traefik.http.middlewares.traefik-auth.basicauth.users=YOUR_USERNAME_PASSWORD"
+      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+
+      - "traefik.http.routers.traefik-secure.entrypoints=https"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.${DOMAIN}`)"
+      # - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=${DOMAIN}"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.${DOMAIN}"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      UMASK: ${UMASK}
+      TZ: ${TZ}
+      CF_API_EMAIL: ${CF_API_EMAIL}
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
+      CF_ZONE_API_TOKEN: ${CF_ZONE_API_TOKEN}
+      CLOUDFLARE_POLLING_INTERVAL: 30
+      CLOUDFLARE_PROPAGATION_TIMEOUT: 320
+
+  whoami:
+    image: "traefik/whoami"
+    container_name: "whoami"
+    networks:
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+
+      - traefik.http.middlewares.redirect-https.redirectScheme.scheme=https
+      - traefik.http.middlewares.redirect-https.redirectScheme.permanent=true
+
+      - traefik.http.routers.whoami-https.rule=Host(`whoami.${DOMAIN:-home}`)
+      - traefik.http.routers.whoami-https.entrypoints=https # name must be defined in traefik
+      - traefik.http.routers.whoami-https.tls=true
+      - traefik.http.routers.whoami-https.service=whoami
+
+      - traefik.http.routers.whoami-http.rule=Host(`whoami.${DOMAIN:-home}`)
+      - traefik.http.routers.whoami-http.entrypoints=http # name must be defined in traefik
+      - traefik.http.routers.whoami-http.middlewares=redirect-https
+      - traefik.http.routers.whoami-http.service=whoami
+
+      - traefik.http.services.whoami.loadbalancer.server.port=80

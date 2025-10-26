@@ -1,0 +1,42 @@
+# Dashy
+# https://dashy.to/
+
+# This is a template
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+  UID: ${UID}
+  GID: ${GID}
+
+name: ${CONTAINER_NAME:-dashy}
+
+networks:
+  default:
+    name: ${CONTAINER_NAME:-dashy}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  dashy:
+    image: lissy93/dashy:${IMAGE_VERSION:-latest}
+    container_name: ${CONTAINER_NAME:-dashy}
+    hostname: ${CONTAINER_NAME:-dashy}
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-dashy}/conf.yml:/app/user-data/conf.yml
+    ports:
+      - ${HTTP_PORT:-8080}:8080
+    environment:
+      <<: *base-env
+      NODE_ENV: production
+    healthcheck:
+      test: ["CMD", "node", "/app/services/healthcheck"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.service=${CONTAINER_NAME:-dashy}"

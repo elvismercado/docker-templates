@@ -1,0 +1,10 @@
+- if you dont have `settings.yml` and `uwsgi.ini` initially, remove `cap_drop: ALL` so files are generated then try to start again from a clean state
+- before starting container first time
+  - ensure `searxng` folder exists
+  - place `limiter.toml` in `searxng` folder
+  - place `settings.yml` in `searxng` folder
+    - maybe start from a clean `settings.yml` file
+  - make sure the directory and file are owned by your user
+- start the container for the first time with `cap_drop: ALL` commented out
+- stop the container and readd `cap_drop: ALL`
+- start again

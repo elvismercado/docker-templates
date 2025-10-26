@@ -1,0 +1,7 @@
+# General
+PUID=99
+PGID=100
+UMASK=022
+TZ=Europe/London
+CONTAINER_NAME=speedtest-tracker
+APP_DATA=/mnt/user/appdata/speedtest-tracker

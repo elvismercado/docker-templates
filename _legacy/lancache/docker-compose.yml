@@ -1,0 +1,86 @@
+# https://github.com/lancachenet/docker-compose.git
+# Lancache
+
+# This setup is for running in my Unraid server
+
+version: "3.9"
+
+x-restart-policy: &restart-policy "unless-stopped"
+x-base-env: &base-env
+  PUID: ${PUID}
+  PGID: ${PGID}
+  UMASK: ${UMASK}
+  TZ: ${TZ}
+
+networks:
+  lancache-net:
+    name: br0
+    driver: ipvlan
+    driver_opts:
+      parent: br0
+    ipam:
+      config:
+        - subnet: 192.168.40.0/24
+    external: true
+
+services:
+  lancache-dns:
+    image: lancachenet/lancache-dns:latest
+    container_name: lancache-dns
+    restart: *restart-policy
+    networks:
+      lancache-net:
+        ipv4_address: 192.168.40.53
+    ports:
+      - 53:53/udp
+      - 53:53/tcp
+    environment:
+      <<: *base-env
+      USE_GENERIC_CACHE: true
+      LANCACHE_IP: 192.168.40.153
+      DNS_BIND_IP: 192.168.40.53
+      UPSTREAM_DNS: ${UPSTREAM_DNS}
+
+  lancache:
+    image: lancachenet/monolithic:latest
+    container_name: lancache
+    restart: *restart-policy
+    networks:
+      lancache-net:
+        ipv4_address: 192.168.40.153
+    ports:
+      - 80:80/tcp
+      - 443:443/tcp
+    volumes:
+      - ${CACHE_ROOT}/cache:/data/cache
+      - ${CACHE_ROOT}/logs:/data/logs
+    environment:
+      <<: *base-env
+      CACHE_ROOT: ${CACHE_ROOT}
+      CACHE_DISK_SIZE: ${CACHE_DISK_SIZE}
+      CACHE_INDEX_SIZE: ${CACHE_INDEX_SIZE}
+      CACHE_MAX_AGE: ${CACHE_MAX_AGE}
+
+  lancache-prefill:
+    image: ich777/lancache-prefill
+    container_name: lancache-prefill
+    restart: *restart-policy
+    dns:
+      - 192.168.40.53
+    volumes:
+      - ${CACHE_ROOT}/prefill:/lancacheprefill
+    environment:
+      <<: *base-env
+      ENABLE_BN: true
+      CRON_SCHED_BN: "0 5 * * *"
+      ENABLE_EPIC: true
+      CRON_SCHED_EPIC: "0 4 * * *"
+      ENABLE_STEAM: true
+      PREFILL_PARAMS_STEAM: --recent
+      CRON_SCHED_STEAM: "0 2 * * *"
+      UPDATES: true
+      FORCE_UPDATE: false
+      LOGCLEANUP: true
+      DATA_PERM: 770
+    depends_on:
+      - lancache-dns

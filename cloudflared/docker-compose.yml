@@ -1,0 +1,31 @@
+# https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/
+
+# This setup is for running in my Unraid server
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-cloudflared}
+
+networks:
+  default:
+    name: ${DOCKER_NETWORK:-cloudflared}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: ${CONTAINER_NAME:-cloudflared}
+    hostname: ${CONTAINER_NAME:-cloudflared}
+    restart: always
+    networks:
+      - default
+    environment:
+      <<: *base-env
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+    command: tunnel --no-autoupdate run
+    labels:
+      - "com.service=${CONTAINER_NAME:-cloudflared}"
+      - "com.centurylinklabs.watchtower.enable=${WATCHTOWER_ENABLE:-false}"

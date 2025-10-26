@@ -1,0 +1,57 @@
+# https://github.com/Stirling-Tools/Stirling-PDF
+# Stirling PDF
+
+# This setup is for running in my Unraid server
+
+x-base-env: &base-env
+  PUID: ${UID}
+  PGID: ${GID}
+  UID: ${UID}
+  GID: ${GID}
+  UMASK: ${UMASK:-022}
+  TZ: ${TZ:-Europe/London}
+
+name: ${CONTAINER_NAME:-stirling-pdf}
+
+networks:
+  mynetwork:
+    name: ${CONTAINER_NAME:-stirling-pdf}
+    ipam:
+      config:
+        - subnet: ${SUBNET:-10.42.0.0/24}
+
+services:
+  stirling-pdf:
+    image: docker.stirlingpdf.com/stirlingtools/stirling-pdf:latest
+    container_name: ${CONTAINER_NAME:-stirling-pdf}
+    hostname: ${CONTAINER_NAME:-stirling-pdf}
+    restart: always
+    networks:
+      mynetwork:
+        ipv4_address: ${IP_ADDRESS:-10.42.0.10}
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-stirling-pdf}/StirlingPDF/trainingData:/usr/share/tessdata # Required for extra OCR languages
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-stirling-pdf}/StirlingPDF/extraConfigs:/configs
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-stirling-pdf}/StirlingPDF/customFiles:/customFiles/
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-stirling-pdf}/StirlingPDF/logs:/logs/
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME:-stirling-pdf}/StirlingPDF/pipeline:/pipeline/
+    ports:
+      - ${HTTP_PORT:-8080}:8080
+    environment:
+      <<: *base-env
+      DISABLE_ADDITIONAL_FEATURES: true
+      DISABLE_PIXEL: true
+      LANGS: en_GB
+      ALLOW_GOOGLE_VISIBILITY: false
+      # Updates system.yml #
+      METRICS_ENABLED: false
+      SYSTEM_ENABLEANALYTICS: false
+      SYSTEM_SHOWUPDATE: false
+      SYSTEM_SHOWUPDATEONLYADMIN: true
+      LEGAL_TERMSANDCONDITIONS: false
+      LEGAL_PRIVACYPOLICY: false
+      LEGAL_ACCESSIBILITYSTATEMENT: false
+      LEGAL_COOKIEPOLICY: false
+      LEGAL_IMPRESSUM: false
+    labels:
+      - "com.service=${CONTAINER_NAME:-stirling-pdf}"

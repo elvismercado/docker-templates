@@ -1,0 +1,13 @@
+http:
+  routers:
+    yuna:
+      rule: "Host(`service.example.com`)"
+      service: yuna
+      tls:
+        certResolver: cloudflare
+
+  services:
+    yuna:
+      loadBalancer:
+        servers:
+          - url: https://192.168.0.1:8080

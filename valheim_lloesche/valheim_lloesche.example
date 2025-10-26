@@ -1,0 +1,26 @@
+
+WORLD_NAME={{ _servername_ }}
+
+SERVER_NAME={{ _servername_ }}
+SERVER_PORT={{ _game_port_ }}
+SERVER_PASS={{ _serverpassword_ }}
+SERVER_PUBLIC=true
+
+BACKUPS_MAX_AGE=30
+
+ADMINLIST_IDS={{ _admins_ }}
+
+CROSSPLAY=false
+
+SUPERVISOR_HTTP=true
+SUPERVISOR_HTTP_USER=
+SUPERVISOR_HTTP_PASS=
+
+VALHEIM_PLUS=true
+VALHEIM_PLUS_REPO=Grantapher/ValheimPlus
+BEPINEX=false
+
+PUID={{ _uid_ }}
+PGID={{ _gid_ }}
+
+STATUS_HTTP=true
