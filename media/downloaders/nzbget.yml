@@ -1,0 +1,32 @@
+# NZBGet
+# https://docs.linuxserver.io/images/docker-nzbget
+
+x-base-env: &base-env
+  TZ: ${TZ:-Europe/London}
+  PUID: ${UID}
+  PGID: ${GID}
+  UMASK: ${UMASK}
+
+services:
+  nzbget:
+    image: lscr.io/linuxserver/nzbget:latest
+    container_name: ${CONTAINER_NAME_PREFIX:-media}-nzbget
+    hostname: ${CONTAINER_NAME_PREFIX:-media}-nzbget
+    restart: always
+    # networks:
+    #   - default
+    network_mode: "service:gluetun"
+    volumes:
+      - ${VOLUMES_BASE:-/tmp}/${CONTAINER_NAME_PREFIX:-media}/containers/nzbget:/config
+      - ${MEDIA_PATH}:/media
+    # Ports are commented out because of passing through `gluetun`
+    # ports:
+    #   - ${NZBGET_HTTP_PORT:-6789}:6789 # WebUI
+    environment:
+      <<: *base-env
+      NZBGET_USER: ${NZBGET_USER:-} #nzbget
+      NZBGET_PASS: ${NZBGET_PASS:-} #tegbzn6789
+    depends_on:
+      - gluetun
+    labels:
+      - "com.service=${CONTAINER_NAME_PREFIX:-media}-nzbget"
