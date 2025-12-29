@@ -90,6 +90,8 @@ services:
       - 8388:8388/tcp # Shadowsocks
       - 8388:8388/udp # Shadowsocks
       - 8000:8000/tcp # control-server
+      # NZBGet
+      - ${NZBGET_HTTP_PORT:-6789}:6789 # WebUI
       # Transmission ports
       - ${TRANSMISSION_HTTP_PORT:-9091}:9091 # WebUI
       - ${TRANSMISSION_TORRENT_PORT:-51413}:51413 # Torrent Port TCP
