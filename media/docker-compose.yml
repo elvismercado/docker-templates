@@ -93,7 +93,7 @@ services:
 
   recyclarr:
     extends:
-      file: utilities/recyclarr.yml
+      file: managers/utilities/recyclarr.yml
       service: recyclarr
 
   # kavita:
