@@ -1,5 +1,7 @@
 # TransmissionBT
-# https://hub.docker.com/r/linuxserver/transmission
+# https://transmissionbt.com
+# https://docs.linuxserver.io/images/docker-transmission
+# https://github.com/transmission/transmission/blob/main/docs/README.md
 
 x-base-env: &base-env
   TZ: ${TZ:-Europe/London}
@@ -55,6 +57,7 @@ x-base-env: &base-env
   TRANSMISSION_LPD_ENABLED: true
   TRANSMISSION_PEX_ENABLED: true
   TRANSMISSION_UTP_ENABLED: true
+  TRANSMISSION_WEB_HOME: ${TRANSMISSION_WEB_HOME:-}
 
 services:
   transmission:
@@ -75,7 +78,6 @@ services:
     #   - ${TRANSMISSION_TORRENT_PORT:-51413}:51413/udp # Torrent Port UDP
     environment:
       <<: *base-env
-      TRANSMISSION_WEB_HOME: ${TRANSMISSION_WEB_HOME}
       PEERPORT: ${TRANSMISSION_TORRENT_PORT:-51413}
       TRANSMISSION_PEER_PORT: ${TRANSMISSION_TORRENT_PORT:-51413}
     depends_on:
@@ -101,7 +103,6 @@ services:
     #   - ${TRANSMISSION_LATTEAM_TORRENT_PORT:-51414}:51414/udp # Torrent Port UDP
     environment:
       <<: *base-env
-      TRANSMISSION_WEB_HOME: ${TRANSMISSION_WEB_HOME}
       PEERPORT: ${TRANSMISSION_LATTEAM_TORRENT_PORT:-51414}
       TRANSMISSION_PEER_PORT: ${TRANSMISSION_LATTEAM_TORRENT_PORT:-51414}
       TRANSMISSION_RPC_PORT: 9092
