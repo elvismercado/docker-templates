@@ -109,41 +109,41 @@ radarr:
           - language-prefer-original-and-english-and-latino
           - language-prefer-original-and-english-and-spanish
         assign_scores_to:
-          - name: WEB-1080p
+          - name: HD Bluray + WEB
             score: 30
       - trash_ids:
           - language-prefer-english-and-latino
           - language-prefer-english-and-spanish
         assign_scores_to:
-          - name: WEB-1080p
+          - name: HD Bluray + WEB
             score: 20
       - trash_ids:
           - language-prefer-original-and-english
           - language-prefer-original-and-latino
           - language-prefer-original-and-spanish
         assign_scores_to:
-          - name: WEB-1080p
+          - name: HD Bluray + WEB
             score: 15
       - trash_ids:
           - language-prefer-original
         assign_scores_to:
-          - name: WEB-1080p
+          - name: HD Bluray + WEB
             score: 8
       - trash_ids:
           - language-prefer-english
           - language-prefer-spanish
         assign_scores_to:
-          - name: WEB-1080p
+          - name: HD Bluray + WEB
             score: 5
       - trash_ids:
           - language-prefer-english-in-title
           - language-prefer-spanish-in-title
         assign_scores_to:
-          - name: WEB-1080p
+          - name: HD Bluray + WEB
             score: 1
       - trash_ids:
           - language-not-original-or-english-or-spanish
         assign_scores_to:
-          - name: WEB-1080p
+          - name: HD Bluray + WEB
             score: -30
 ##################################
