@@ -25,6 +25,6 @@ services:
       LOG_HTML: ${LOG_HTML:-false}
       CAPTCHA_SOLVER: ${CAPTCHA_SOLVER:-none}
     deploy:
-      replicas: 3 # can't set container_name and flaresolverr as container name must be unique
+      replicas: ${REPLICAS:-3} # can't set container_name and flaresolverr as container name must be unique
     labels:
       - "com.service=${CONTAINER_NAME_PREFIX:-media}-flaresolverr"

@@ -37,63 +37,63 @@ services:
 
   jellyfin:
     extends:
-      file: jellyfin.yml
+      file: players/jellyfin.yml
       service: jellyfin
       
   jellyseerr:
     extends:
-      file: jellyseerr.yml
+      file: requests/jellyseerr.yml
       service: jellyseerr
 
   huntarr:
     extends:
-      file: huntarr.yml
+      file: managers/utilities/huntarr.yml
       service: huntarr
 
   gluetun:
     extends:
-      file: gluetun.yml
+      file: vpns/gluetun.yml
       service: gluetun
   transmission:
     extends:
-      file: transmission.yml
+      file: downloaders/transmission.yml
       service: transmission
   transmission-lat-team:
     extends:
-      file: transmission.yml
+      file: downloaders/transmission.yml
       service: transmission-lat-team
 
   flaresolverr:
     extends:
-      file: flaresolverr.yml
+      file: indexers/flaresolverr.yml
       service: flaresolverr
 
   prowlarr:
     extends:
-      file: prowlarr.yml
+      file: indexers/prowlarr.yml
       service: prowlarr
 
   radarr-movies-hd:
     extends:
-      file: radarr.yml
+      file: managers/radarr.yml
       service: radarr-movies-hd
   radarr-movies-anime-hd:
     extends:
-      file: radarr.yml
+      file: managers/radarr.yml
       service: radarr-movies-anime-hd
 
   sonarr-series-hd:
     extends:
-      file: sonarr.yml
+      file: managers/sonarr.yml
       service: sonarr-series-hd
   sonarr-series-anime-hd:
     extends:
-      file: sonarr.yml
+      file: managers/sonarr.yml
       service: sonarr-series-anime-hd
 
   recyclarr:
     extends:
-      file: recyclarr.yml
+      file: utilities/recyclarr.yml
       service: recyclarr
 
   # kavita:
