@@ -4,10 +4,31 @@
 # For the settings file reference guide, visit the link to the wiki below:
 # https://recyclarr.dev/wiki/yaml/settings-reference/
 
-repositories:
-  trash_guides:
-    clone_url: https://github.com/elvismercado/TRaSH-Guides.git # has customized custom formats
-    branch: add-custom-formats
-  config_templates:
-    clone_url: https://github.com/recyclarr/config-templates.git
-    branch: master
+# repositories:
+#   trash_guides:
+#     clone_url: https://github.com/elvismercado/TRaSH-Guides.git # has customized custom formats
+#     branch: add-custom-formats
+#   config_templates:
+#     clone_url: https://github.com/recyclarr/config-templates.git
+#     branch: master
+
+resource_providers:
+  - name: radarr-cfs
+    type: custom-formats
+    path: /config/custom-formats/radarr
+    service: radarr
+
+  - name: sonarr-cfs
+    type: custom-formats
+    path: /config/custom-formats/sonarr
+    service: sonarr
+
+  - name: shared-radarr-cfs
+    type: custom-formats
+    path: /config/custom-formats/shared
+    service: radarr
+
+  - name: shared-rasonarrdarr-cfs
+    type: custom-formats
+    path: /config/custom-formats/shared
+    service: sonarr
