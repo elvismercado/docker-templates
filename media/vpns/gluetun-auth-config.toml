@@ -3,7 +3,6 @@ name = "public"
 routes = [
   "GET /v1/vpn/status",
   "GET /v1/vpn/settings",
-  "GET /v1/portforward",
   "GET /v1/dns/status",
   "GET /v1/updater/status",
   "GET /v1/publicip/ip"
