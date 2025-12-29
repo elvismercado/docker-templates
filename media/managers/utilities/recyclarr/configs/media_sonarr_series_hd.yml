@@ -79,6 +79,15 @@ sonarr:
         assign_scores_to:
           - name: WEB-1080p
 
+      # resets
+      - trash_ids:
+          - 15a05bc7c1a36e2b57fd628f8977e2fc # AV1
+          - 9c11cd3f07101cdba90a2d81cf0e56b4 # LQ
+          - e2315f990da2e2cbfc9fa5b7a6fcfe48 # LQ (Release Title)
+        assign_scores_to:
+          - name: WEB-1080p
+            score: 0
+
      # Custom boosts
       - trash_ids:
           - c9eafd50846d299b862ca9bb6ea91950 # x265

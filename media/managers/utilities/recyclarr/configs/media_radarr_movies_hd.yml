@@ -84,6 +84,15 @@ radarr:
         assign_scores_to:
           - name: HD Bluray + WEB
 
+      # resets
+      - trash_ids:
+          - cae4ca30163749b891686f95532519bd # AV1
+          - 90a6f9a284dff5103f6346090e6280c8 # LQ
+          - e204b80c87be9497a8a6eaff48f72905 # LQ (Release Title)
+        assign_scores_to:
+          - name: HD Bluray + WEB
+            score: 0
+
       # Custom boosts
       - trash_ids:
           - 9170d55c319f4fe40da8711ba9d8050d # x265
