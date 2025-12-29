@@ -54,6 +54,10 @@ services:
     extends:
       file: vpns/gluetun.yml
       service: gluetun
+  nzbget:
+    extends:
+      file: downloaders/nzbget.yml
+      service: nzbget
   transmission:
     extends:
       file: downloaders/transmission.yml
