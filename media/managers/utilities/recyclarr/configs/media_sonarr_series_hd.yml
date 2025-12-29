@@ -90,7 +90,7 @@ sonarr:
           - 7ba05c6e0e14e793538174c679126996 # Multi
         assign_scores_to:
           - name: WEB-1080p
-            score: 1
+            score: 10
 
       - trash_ids:
           - 3bc5f395426614e155e585a2f056cdf1 # Season Pack
@@ -103,6 +103,48 @@ sonarr:
           - lat-team
         assign_scores_to:
           - name: WEB-1080p
-            score: 100
-            
+            score: 10
+
+      # Custom languages
+      - trash_ids:
+          - language-prefer-original-and-english-and-latino
+          - language-prefer-original-and-english-and-spanish
+        assign_scores_to:
+          - name: WEB-1080p
+            score: 30
+      - trash_ids:
+          - language-prefer-english-and-latino
+          - language-prefer-english-and-spanish
+        assign_scores_to:
+          - name: WEB-1080p
+            score: 20
+      - trash_ids:
+          - language-prefer-original-and-english
+          - language-prefer-original-and-latino
+          - language-prefer-original-and-spanish
+        assign_scores_to:
+          - name: WEB-1080p
+            score: 15
+      - trash_ids:
+          - language-prefer-original
+        assign_scores_to:
+          - name: WEB-1080p
+            score: 8
+      - trash_ids:
+          - language-prefer-english
+          - language-prefer-spanish
+        assign_scores_to:
+          - name: WEB-1080p
+            score: 5
+      - trash_ids:
+          - language-prefer-english-in-title
+          - language-prefer-spanish-in-title
+        assign_scores_to:
+          - name: WEB-1080p
+            score: 1
+      - trash_ids:
+          - language-not-original-or-english-or-spanish
+        assign_scores_to:
+          - name: WEB-1080p
+            score: -30
 ##################################

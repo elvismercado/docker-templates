@@ -46,3 +46,5 @@ radarr:
         assign_scores_to:
           - name: Remux-1080p - Anime
             score: 2000 # Adjust scoring as desired
+
+# prefer dual audio for anime movies

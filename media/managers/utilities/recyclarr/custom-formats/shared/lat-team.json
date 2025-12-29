@@ -1,7 +1,7 @@
 {
     "trash_id": "lat-team",
     "trash_scores": {
-      "default": 2000
+      "default": 10
     },
     "name": "Lat-Team",
     "includeCustomFormatWhenRenaming": false,
