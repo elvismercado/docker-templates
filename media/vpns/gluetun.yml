@@ -29,9 +29,9 @@ x-servers: &servers
   SERVER_COUNTRIES: Denmark,Finland,France,Germany,Netherlands,Norway,Sweden,Switzerland,UK # wireguard owned
   # SERVER_COUNTRIES: Australia,Brazil,Canada,Chile,Colombia,Israel,Mexico,New Zealand,Peru,USA # wireguard outside europe rented
   # SERVER_COUNTRIES: Hong Kong,Indonesia,Japan,Singapore,South Africa,Thailand # wireguard asia rented
-  SERVER_CITIES: ${SERVER_CITIES}
-  SERVER_HOSTNAMES: ${SERVER_HOSTNAMES}
-  ISP: ${ISP}
+  SERVER_CITIES: ${SERVER_CITIES:-}
+  SERVER_HOSTNAMES: ${SERVER_HOSTNAMES:-}
+  ISP: ${ISP:-}
   OWNED_ONLY: ${OWNED_ONLY:-no} # no,yes
 
 # https://github.com/qdm12/gluetun-wiki/blob/main/setup/options/control-server.md
@@ -39,7 +39,7 @@ x-servers: &servers
 x-control-server: &control-server
   HTTP_CONTROL_SERVER_ADDRESS: ${HTTP_CONTROL_SERVER_ADDRESS:-:8000}
   HTTP_CONTROL_SERVER_LOG: ${HTTP_CONTROL_SERVER_LOG:-on} # on,off
-  HTTP_CONTROL_SERVER_AUTH_CONFIG_FILEPATH: ${HTTP_CONTROL_SERVER_AUTH_CONFIG_FILEPATH}
+  HTTP_CONTROL_SERVER_AUTH_CONFIG_FILEPATH: ${HTTP_CONTROL_SERVER_AUTH_CONFIG_FILEPATH:-}
 
 # https://github.com/qdm12/gluetun-wiki/blob/main/setup/options/dns.md
 x-dns: &dns
@@ -50,7 +50,7 @@ x-dns: &dns
   BLOCK_MALICIOUS: ${BLOCK_MALICIOUS:-on}
   BLOCK_SURVEILLANCE: ${BLOCK_SURVEILLANCE:-on}
   BLOCK_ADS: ${BLOCK_ADS:-on}
-  UNBLOCK: ${UNBLOCK}
+  DNS_UNBLOCK_HOSTNAMES: ${DNS_UNBLOCK_HOSTNAMES:-}
 
 x-healthcheck: &healthcheck
   HEALTH_TARGET_ADDRESS: ${HEALTH_TARGET_ADDRESS:-cloudflare.com:443}	# Address to ping on every internal health check
