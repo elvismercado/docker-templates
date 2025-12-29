@@ -124,11 +124,11 @@ services:
   #     file: readarr.yml
   #     service: readarr-audiobooks
 
-  # bazarr-anime:
-  #   extends:
-  #     file: bazarr.yml
-  #     service: bazarr-anime
-  # bazarr-hd:
-  #   extends:
-  #     file: bazarr.yml
-  #     service: bazarr-hd
+  bazarr-anime-hd:
+    extends:
+      file: managers/bazarr.yml
+      service: bazarr-anime-hd
+  bazarr-hd:
+    extends:
+      file: managers/bazarr.yml
+      service: bazarr-hd
