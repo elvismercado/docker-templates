@@ -2,32 +2,32 @@
 
 ###################################################################################################
 # Recyclarr Configuration Template: Anime Radarr                                                  #
-# Updated: 2024-08-08                                                                             #
+# Updated: 2025-06-03                                                                             #
 # Documentation: https://recyclarr.dev                                                            #
 # Note: If you are using multiple profiles in a single instance, please read the following        #
 # documentation about file merging:                                                               #
-# https://recyclarr.dev/wiki/yaml/config-examples/#merge-single-instance                          #
+# https://recyclarr.dev/reference/config-examples/#merge-single-instance                          #
 ###################################################################################################
 
-# Instance Definition: https://recyclarr.dev/wiki/yaml/config-reference/basic/
+# Instance Definition: https://recyclarr.dev/reference/configuration/basic/
 radarr:
   media_radarr_movies_anime_hd:
     delete_old_custom_formats: true
     replace_existing_custom_formats: true
 
     media_naming:
-      folder: jellyfin
+      folder: jellyfin-imdb
       movie:
         rename: true
-        standard: anime-jellyfin
+        standard: jellyfin-anime-imdb
 
     include:
       # Comment out any of the following includes to disable them
-      - template: radarr-quality-definition-movie
+      - template: radarr-quality-definition-anime
       - template: radarr-quality-profile-anime
       - template: radarr-custom-formats-anime
 
-    # Custom Formats: https://recyclarr.dev/wiki/yaml/config-reference/custom-formats/
+# Custom Formats: https://recyclarr.dev/reference/configuration/custom-formats/
     custom_formats:
       - trash_ids:
           - 064af5f084a0a24458cc8ecd3220f93f # Uncensored
@@ -39,7 +39,7 @@ radarr:
           - a5d148168c4506b55cf53984107c396e # 10bit
         assign_scores_to:
           - name: Remux-1080p - Anime
-            score: 0 # Adjust scoring as desired
+            score: 10 # Adjust scoring as desired
 
       - trash_ids:
           - 4a3b087eea2ce012fcc1ce319259a3be # Anime Dual Audio

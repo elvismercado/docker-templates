@@ -6,18 +6,18 @@
 # Documentation: https://recyclarr.dev                                                            #
 # Note: If you are using multiple profiles in a single instance, please read the following        #
 # documentation about file merging:                                                               #
-# https://recyclarr.dev/wiki/yaml/config-examples/#merge-single-instance                          #
+# https://recyclarr.dev/reference/config-examples/#merge-single-instance                          #
 # This config file is for use with Sonarr V4 only                                                 #
 ###################################################################################################
 
-# Instance Definition: https://recyclarr.dev/wiki/yaml/config-reference/basic/
+# Instance Definition: https://recyclarr.dev/reference/configuration/basic/
 sonarr:
   media_sonarr_series_hd:
     delete_old_custom_formats: true
     replace_existing_custom_formats: true
 
     media_naming:
-      series: jellyfin
+      series: jellyfin-tvdb
       season: default
       episodes:
         rename: true
@@ -33,14 +33,14 @@ sonarr:
       # - template: sonarr-v4-quality-profile-web-1080p-alternative
       - template: sonarr-v4-custom-formats-web-1080p
 
-    # Custom Formats: https://recyclarr.dev/wiki/yaml/config-reference/custom-formats/
+# Custom Formats: https://recyclarr.dev/reference/configuration/custom-formats/
     custom_formats:
       # Optional
       - trash_ids:
           - 32b367365729d530ca1c124a0b180c64 # Bad Dual Groups
           - 82d40da2bc6923f41e14394075dd4b03 # No-RlsGroup
-          - e1a997ddb54e3ecbfe06341ad323c458 # Obfuscated
-          - 06d66ab109d4d2eddb2794d21526d140 # Retags
+          # - e1a997ddb54e3ecbfe06341ad323c458 # Obfuscated     # using usenet
+          # - 06d66ab109d4d2eddb2794d21526d140 # Retags         # using usenet
           - 1b3994c551cbb92a2c781af061f4ab44 # Scene
         assign_scores_to:
           - name: WEB-1080p
@@ -56,23 +56,53 @@ sonarr:
         assign_scores_to:
           - name: WEB-1080p
 
-      ##### My Customs #####
+########### My Customs ###########
 
-      # Miscellaneous
+      # Just tags
       - trash_ids:
-          - 290078c8b266272a5cc8e251b5e2eb0b # 1080p
-          - ec8fa7296b64e8cd390a1600981f3923 # Repack/Proper
-          - eb3d5cc0a2be0db205fb823640db6a3c # Repack2
-          - 44e7c4de10ae50265753082e5dc76047 # Repack3
-          - d7c747094a7c65f4c2de083c24899e8b # FreeLeech
-          - cddfb4e32db826151d97352b8e37c648 # x264
-          - c9eafd50846d299b862ca9bb6ea91950 # x265
           - 1bd69272e23c5e6c5b1d6c8a36fce95e # HFR
+          - cddfb4e32db826151d97352b8e37c648 # x264
+          - e0c1a67f23908a55b6ae9834e8ed6727 # Single Episode
+          - 4a20cfb76b5f92a8ca22b894b32e71be # Multi-Episode
         assign_scores_to:
-          - name: HD Bluray + WEB
+          - name: WEB-1080p
+
+      # Auto Boosts
+      - trash_ids:
+          - 3a4127d8aa781b44120d907f2cd62627 # Hybrid           # 100
+          - b735f09d3c025cbb7d75a5d38325b73b # Remaster         # 25
+          - 290078c8b266272a5cc8e251b5e2eb0b # 1080p            # 50
+          - ec8fa7296b64e8cd390a1600981f3923 # Repack/Proper    # 5
+          - eb3d5cc0a2be0db205fb823640db6a3c # Repack2          # 6
+          - 44e7c4de10ae50265753082e5dc76047 # Repack3          # 7
+          - d7c747094a7c65f4c2de083c24899e8b # FreeLeech        # 1
+        assign_scores_to:
+          - name: WEB-1080p
+
+     # Custom boosts
+      - trash_ids:
+          - c9eafd50846d299b862ca9bb6ea91950 # x265
+        assign_scores_to:
+          - name: WEB-1080p
+            score: 1
 
       - trash_ids:
           - 7ba05c6e0e14e793538174c679126996 # Multi
         assign_scores_to:
-          - name: HD Bluray + WEB
-            score: 200
+          - name: WEB-1080p
+            score: 1
+
+      - trash_ids:
+          - 3bc5f395426614e155e585a2f056cdf1 # Season Pack
+        assign_scores_to:
+          - name: WEB-1080p
+            score: 10
+
+      # Lat-Team
+      - trash_ids:
+          - lat-team
+        assign_scores_to:
+          - name: WEB-1080p
+            score: 100
+            
+##################################

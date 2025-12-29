@@ -6,18 +6,18 @@
 # Documentation: https://recyclarr.dev                                                            #
 # Note: If you are using multiple profiles in a single instance, please read the following        #
 # documentation about file merging:                                                               #
-# https://recyclarr.dev/wiki/yaml/config-examples/#merge-single-instance                          #
+# https://recyclarr.dev/reference/config-examples/#merge-single-instance                          #
 # This config file is for use with Sonarr V4 only                                                 #
 ###################################################################################################
 
-# Instance Definition: https://recyclarr.dev/wiki/yaml/config-reference/basic/
+# Instance Definition: https://recyclarr.dev/reference/configuration/basic/
 sonarr:
   media_sonarr_series_anime_hd:
     delete_old_custom_formats: true
     replace_existing_custom_formats: true
 
     media_naming:
-      series: jellyfin
+      series: jellyfin-tvdb
       season: default
       episodes:
         rename: true
@@ -31,7 +31,7 @@ sonarr:
       - template: sonarr-v4-quality-profile-anime
       - template: sonarr-v4-custom-formats-anime
 
-    # Custom Formats: https://recyclarr.dev/wiki/yaml/config-reference/custom-formats/
+# Custom Formats: https://recyclarr.dev/reference/configuration/custom-formats/
     custom_formats:
       - trash_ids:
           - 026d5aadd1a6b4e550b134cb6c72b3ca # Uncensored
@@ -43,7 +43,7 @@ sonarr:
           - b2550eb333d27b75833e25b8c2557b38 # 10bit
         assign_scores_to:
           - name: Remux-1080p - Anime
-            score: 0 # Adjust scoring as desired
+            score: 10 # Adjust scoring as desired
 
       - trash_ids:
           - 418f50b10f1907201b6cfdf881f467b7 # Anime Dual Audio

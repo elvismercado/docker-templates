@@ -16,10 +16,10 @@ radarr:
     replace_existing_custom_formats: true
 
     media_naming:
-      folder: jellyfin
+      folder: jellyfin-imdb
       movie:
         rename: true
-        standard: jellyfin
+        standard: jellyfin-imdb
 
     include:
       # Comment out any of the following includes to disable them
@@ -102,7 +102,7 @@ radarr:
           - lat-team
         assign_scores_to:
           - name: HD Bluray + WEB
-            score: 2000
+            score: 100
 
       # Custom languages
       - trash_ids: # Custom 101
