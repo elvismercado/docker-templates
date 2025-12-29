@@ -11,7 +11,7 @@ services:
   nzbget:
     image: lscr.io/linuxserver/nzbget:latest
     container_name: ${CONTAINER_NAME_PREFIX:-media}-nzbget
-    hostname: ${CONTAINER_NAME_PREFIX:-media}-nzbget
+    # hostname: ${CONTAINER_NAME_PREFIX:-media}-nzbget # conflicts with network_mode
     restart: always
     # networks:
     #   - default
