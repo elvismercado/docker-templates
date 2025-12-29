@@ -4,7 +4,7 @@
     "default": 10
   },
   "trash_description": "Prefer Language X",
-  "name": "SPA-Title",
+  "name": "SPAtitle",
   "includeCustomFormatWhenRenaming": false,
   "specifications": [
     {

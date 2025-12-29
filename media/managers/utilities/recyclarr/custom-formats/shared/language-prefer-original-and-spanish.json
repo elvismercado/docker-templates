@@ -4,7 +4,7 @@
     "default": 10
   },
   "trash_description": "Prefer Original and Spanish",
-  "name": "ORIG+ENG",
+  "name": "ORIG+SPA",
   "includeCustomFormatWhenRenaming": false,
   "specifications": [
     {
