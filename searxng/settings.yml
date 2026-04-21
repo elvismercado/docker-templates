@@ -67,7 +67,7 @@ brand:
 
 search:
   safe_search: 0
-  autocomplete: brave
+  autocomplete: duckduckgo
   autocomplete_min: 4
   favicon_resolver: "duckduckgo"
   default_lang: all
