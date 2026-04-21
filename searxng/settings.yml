@@ -37,7 +37,7 @@ brand:
   issue_url: ""
   docs_url: ""
   public_instances: ""
-  wiki_url: "false"
+  wiki_url: false
 
 search:
   safe_search: 0
@@ -52,19 +52,15 @@ search:
     - es
 
 server:
-  secret_key: "change-me-to-a-random-secret-key"
-  image_proxy: true
+  secret_key: "ultrasecretkey"
   default_http_headers:
     X-Content-Type-Options: nosniff
     X-Download-Options: noopen
     X-Robots-Tag: noindex, nofollow
     Referrer-Policy: no-referrer
-    X-Frame-Options: SAMEORIGIN
-    X-Content-Security-Policy: "default-src 'self'; img-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self';"
-    X-XSS-Protection: "1; mode=block"
 
-redis:
-  url: redis://searxng-valkey:6379/0
+valkey:
+  url: false
 
 ui:
   static_use_hash: true
