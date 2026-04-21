@@ -63,7 +63,7 @@ brand:
   issue_url: ""
   docs_url: ""
   public_instances: ""
-  wiki_url: false
+  wiki_url: ""
 
 search:
   safe_search: 0
