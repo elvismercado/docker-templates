@@ -64,7 +64,7 @@ server:
     X-XSS-Protection: "1; mode=block"
 
 redis:
-  url: redis://searxng-redis:6379/0
+  url: redis://searxng-valkey:6379/0
 
 ui:
   static_use_hash: true

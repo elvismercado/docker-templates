@@ -10,5 +10,5 @@ pass_ip = [
   '127.0.0.0/8',     # local
   '192.168.0.0/16', # IPv4 private network
   # 'fe80::/10',     # IPv6 linklocal / wins over botdetection.ip_limit.filter_link_local
-  '84.86.154.95'
+  # '10.0.0.x',     # add your public IP or trusted IPs here
 ]

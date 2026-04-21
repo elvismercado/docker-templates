@@ -1,0 +1,14 @@
+# WUD (What's Up Docker?) labels — notify + auto-update (all versions)
+
+services:
+  searxng:
+    labels:
+      - "wud.watch=true"
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+"
+      - "wud.trigger.include=smtp.gmail,docker.local"
+
+  valkey:
+    labels:
+      - "wud.watch=true"
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$$"
+      - "wud.trigger.include=smtp.gmail,docker.local:minor"
