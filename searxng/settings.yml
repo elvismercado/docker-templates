@@ -2,29 +2,55 @@
 use_default_settings:
   engines:
     keep_only:
-      # - google
-      # - google images
-      # - google videos
-      # - google news
-      # - bing
-      # - bing images
-      # - bing videos
-      # - bing news
-      # - mojeek
-      # - mojeek images
-      # - mojeek news
+      # Core search (own index)
+      - google
+      - google images
+      - google videos
+      - google news
+      - google scholar
+      - bing
+      - bing images
+      - bing videos
+      - bing news
       - brave
       - brave.images
       - brave.videos
       - brave.news
-      - duckduckgo
-      - duckduckgo images
-      - duckduckgo videos
-      - duckduckgo news
-      - startpage
-      - startpage images
-      - startpage news
-        
+      - mojeek
+      - mojeek images
+      - mojeek news
+      # Knowledge/reference
+      - wikipedia
+      - wikidata
+      - currency
+      - mdn
+      # Video/music
+      - youtube
+      - genius
+      # IT/developer
+      - github
+      - stackoverflow
+      - arch linux wiki
+      - gitlab
+      # Maps/weather
+      - openstreetmap
+      - openmeteo
+
+# Enable engines that are disabled by default upstream
+engines:
+  - name: bing
+    disabled: false
+  - name: mojeek
+    disabled: false
+  - name: mojeek images
+    disabled: false
+  - name: mojeek news
+    disabled: false
+  - name: gitlab
+    disabled: false
+  - name: openmeteo
+    disabled: false
+
 general:
   debug: false
   instance_name: "SearXNG"
